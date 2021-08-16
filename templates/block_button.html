@@ -1,0 +1,92 @@
+{% load static %}
+
+
+<header>
+    <div class="overlay"></div>
+    <img class="back" src="{% static '/img/back.jpg' %}" alt="">
+    <div class="container h-100">
+        <div class="d-flex h-50 text-center align-items-center">
+            <div class="w-100 text-white">
+                <h1 class="display-4 title text-uppercase">перевозка грузов, посылок, документов <br> по россии</h1>
+            </div>
+        </div>
+        <div class="container row h-50 align-items-end">
+            <div class="col">
+                <div class="card-group position-relative">
+                    <div class="card text-center" style="background-color: #3D3935;">
+                        <a href="/calc/" target="_blank" style="color: inherit;">
+                            <div class="card-body">
+                                <img src="{% static '/img/calculate_icon.png' %}" alt="">
+                                <p class="card-text text1 calc text-white">КАЛЬКУЛЯТОР</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="card text-center" style="background-color: #3D3935;">
+                        <a href="/order/" target="_blank" style="color: inherit;">
+                            <div class="card-body " style=" border-left: 1px solid white;
+                        border-right: 1px solid white">
+                                <img src="{% static '/img/receipt_icon.png' %}" alt="">
+                                <p class="card-text text1 text-white">РАСЧЕТ И ОФОРМЛЕНИЕ <br> ЗАКАЗА</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="card text-center" style="background-color: #3D3935;">
+                        <a href="/tracking/" target="_blank" style="color: inherit;">
+                            <div class="card-body">
+                                <img src="{% static '/img/map_icon.png' %}" alt="">
+                                <p class="card-text text1 text-white">МЕСТОНАХОЖДЕНИЕ <br> ГРУЗА</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Основные виды перевозок</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl">
+            <div class="card-deck" style="margin-bottom: 75px;">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase text2">Стандарт</h5>
+                        <p class="card-text text3">
+                            Перевозка сборного <br> груза автомобильным <br> транспортом
+                        </p>
+                        <p class="card-text text4">
+                            <a href="/standart/" target="_blank" style="color: #007041;">Узнать больше</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase text2">Экспресс</h5>
+                        <p class="card-text text3">
+                            Ускоренная перевозка <br> грузов, сроком от <br> одного рабочего дня
+                        </p>
+                        <p class="card-text text4">
+                            <a href="/ekspress/" target="_blank" style="color: #007041;">Узнать больше</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase text2">Конверт</h5>
+                        <p class="card-text text3">
+                            Отправка документов <br> в фирменном <br> конверте
+                        </p>
+                        <p class="card-text text4">
+                            <a href="/konvert/" target="_blank" style="color: #007041;">Узнать больше</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>

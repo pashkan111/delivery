@@ -1,0 +1,641 @@
+{% extends 'shared/base.html' %} 
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+
+
+     
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" /> 
+
+{% block base_content %}  
+
+<h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Расчет и оформление заказа</h4>
+<div class="container" style="color: #3D3935;">
+    <div class="jumbotron">
+    <form action="{% url 'order' %}" method="POST" >
+      {% csrf_token %}
+        <div class="row mb-3">
+            <div class="form-group col-md-6 col-sm-6">
+              <div class="ui-widget">
+              {{ form.city_to|as_crispy_field }}
+            </div>
+
+               
+                    <div class="form-check form-check-inline">
+                   
+                        <input type="radio" class="form-check-input" id="address" name="inlineMaterialRadiosExample" onclick="radioCheck()">
+                        <label class="form-check-label" for="address">От адреса</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+         
+                        <input type="radio" class="form-check-input" id="term" name="inlineMaterialRadiosExample" onclick="radioCheck()">
+                        <label class="form-check-label" for="term">От терминала</label>
+                      </div>   
+                      
+                      <div id="addressYes" style="display: none;">
+                
+                        {{ form.address_from|as_crispy_field }}
+                      </div>
+                      <div id="termYes" style="display: none;">
+                        {{ form.terminal_from|as_crispy_field }}
+                      </div>
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.city_from|as_crispy_field }}
+                
+
+                <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" id="addressTo" name="inlineMaterialRadiosExample2" onclick="radioCheckTo()">
+                    <label class="form-check-label" for="addressTo">До адреса</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" id="termTo" name="inlineMaterialRadiosExample2" onclick="radioCheckTo()">
+                    <label class="form-check-label" for="termTo">До терминала</label>
+                  </div>
+
+                  <div id="addressToYes" style="display: none;">
+                    {{ form.address_to|as_crispy_field }}
+                  </div>
+                  <div id="termToYes" style="display: none;">
+                    {{ form.terminal_to|as_crispy_field }}
+                  </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.date_cargo|as_crispy_field }}
+               
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.type_transporation|as_crispy_field }}
+                
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.nature_cargo|as_crispy_field }}
+               
+            </div>
+
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.interval|as_crispy_field }}
+            </div>
+
+            <div class="form-group col-md-12 col-sm-6">
+                <ul class="nav nav-tabs justify-content-center">
+                    <li class="nav-item">
+                      <a class="nav-link active" style="color: #007041;" data-toggle="tab" href="#onePlace">1 место</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#serveralPlaces">Несколько мест</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#documentation">Документы</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content p-3">
+                    <div class="tab-pane fade show active" id="onePlace">
+                        
+                            <div class="row">
+                              <div class="col-md-4 col-sm-6 ">
+                                {{ form.length_one|as_crispy_field }}
+                              </div>
+                              <div class="col-md-4 col-sm-6">
+                                {{ form.width_one|as_crispy_field }}
+                              </div>
+                              <div class="col-md-4 col-sm-6">
+                                {{ form.height_one|as_crispy_field }}
+                            </div>
+                        
+                            <div class="col-md-4 col-sm-6 ">
+                              {{ form.weight_one|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              {{ form.volume_one|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              {{ form.place_quantity|as_crispy_field }}
+                            </div>
+                            </div>
+                         
+                    </div>
+                    <div class="tab-pane fade" id="serveralPlaces">
+                       
+                            <div class="row">
+                              <div class="col-md-3 col-sm-6 ">
+                                {{ form.some_weight|as_crispy_field }}
+                              </div>
+                              <div class="col-md-3 col-sm-6">
+                                {{ form.some_volume|as_crispy_field }}
+                              </div>
+                              <div class="col-md-3 col-sm-6">
+                                {{ form.some_place_quantity|as_crispy_field }}
+                            </div>
+                        
+                            <div class="col-md-3 col-sm-6 ">
+                              {{ form.some_longest|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                              {{ form.some_widest|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                              {{ form.some_highest|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                              {{ form.some_hardest|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <br>
+                                <a href="#" class="font-weight-bold" data-toggle="tooltip" style="color: red" title="Грузовое место считается негабаритным, если вес места не менее 500 кг или одно из измерений равно или более 3 метров">(!)Негабарит</a>
+                            </div>
+                            </div>
+                         
+                    </div>
+                    <div class="tab-pane fade" id="documentation">
+                        <div class="alert alert-warning" role="alert">
+                                В случае превышения данных по умолчанию, воспользуйтесь формой &nbsp;"1 место" !
+                        </div>
+                            <div class="row">
+                              <div class="col-md-6 col-sm-6 ">
+                                {{ form.document_length|as_crispy_field }}
+                              </div>
+                              <div class="col-md-6 col-sm-6">
+                                {{ form.document_width|as_crispy_field }}
+                              </div>
+                              <div class="col-md-6 col-sm-6">
+                                {{ form.document_height|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 col-sm-6 ">
+                              {{ form.document_weight|as_crispy_field }}
+                            </div>
+                            </div>
+                       
+                    </div>
+                  </div>
+            </div>
+                
+            <div class="accordion form-group col-md-12 col-sm-6 " id="accordionExample">
+                <div class="card z-depth-0 bordered">
+                  <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                      <button class="btn btn-link font-weight-bold" type="button" style="color: #007041;" data-toggle="collapse" data-target="#collapseOne"
+                        aria-expanded="true" aria-controls="collapseOne">
+                        Дополнительные услуги
+                      </button>
+                    </h5>
+                  </div>
+                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                    data-parent="#accordionExample">
+                    <div class="card-body">
+                        <div class="form-group col-md-6 col-sm-6">
+                          {{ form.declared_value|as_crispy_field }}
+                        </div>
+                            <div class="custom-control custom-checkbox">
+                                <div class="form-group form-check" style="visibility: visible;">
+                                  {{ form.insurance|as_crispy_field }}
+                                    
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;">
+                                  {{ form.return_of_accompanying_documents|as_crispy_field }}
+                               
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;">
+                                  {{ form.sending_accompanying_documents|as_crispy_field }}
+                                    
+                                </div>
+                                <div class="form-group form-check" id="prr" style="visibility: visible;" onclick="checkPRR()">
+                                  {{ form.loading_and_unloading_sender|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="prrYes" style="display: none">
+                                    {{ form.service_lift_sender|as_crispy_field }}
+                                    {{ form.floor_sender|as_crispy_field }}
+                                    {{ form.carry_sender|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" id="prr1" style="visibility: visible;" onclick="checkPRR_r()">
+                                  {{ form.loading_and_unloading_recipient|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6"  id="prr1Yes" style="display: none">
+                                    {{ form.service_lift_recipient|as_crispy_field }}
+                                    {{ form.floor_recipient|as_crispy_field }}
+                                    {{ form.carry_recipient|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkPass()">
+                                  {{ form.pass_sender_territory|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="pass" style="display: none">
+                                    {{ form.order_per_hour|as_crispy_field }}
+                                    {{ form.order_per_day|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;">
+                                  {{ form.registration_for_shipment|as_crispy_field }}
+                                    
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkPaid()">
+                                  {{ form.paid_entry_sender_territory|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="paid" style="display: none">
+                                    {{ form.sum|as_crispy_field }}
+                                    {{ form.reimbursement_method|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkInternal()">
+                                  {{ form.internal_shipment_number|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="internal" style="display: none">
+                                    {{ form.info_internal_shipment_number|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkCOD()">
+                                  {{ form.cod|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="cod" style="display: none">
+                                    {{ form.cod_input|as_crispy_field }}
+                                  </div>
+                                    
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkSecond()">
+                                  {{ form.second_address|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="second" style="display: none">
+                                    {{ form.check_second_address|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;">
+                                  {{ form.delivery_confirmation|as_crispy_field }}
+                                    
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkPower()">
+                                  {{ form.power_of_attorney|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="power" style="display: none">
+                                    {{ form.info_proxy|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="form-group form-check" style="visibility: visible;" onclick="checkCall()">
+                                  {{ form.pre_call|as_crispy_field }}
+                                  <div class="col-md-6 col-sm-6" id="call" style="display: none">
+                                    {{ form.callback_one_hour|as_crispy_field }}
+                                    {{ form.callback_two_hour|as_crispy_field }}
+                                  </div>
+                                </div>
+                                </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card z-depth-0 bordered">
+                    <div class="card-header" id="headingTwo">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link collapsed font-weight-bold" type="button" style="color: #007041;" data-toggle="collapse"
+                          data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          Упаковка груза
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                      <div class="card-body">
+                        <div class="custom-control custom-checkbox">
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.rigid_packaging|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.pallet_board|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.bag|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.cardboard_box|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.pallet|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.strapping|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.stretch|as_crispy_field }}
+                                
+                            </div>
+                            <div class="form-group form-check" style="visibility: visible;">
+                              {{ form.air_bubble|as_crispy_field }}
+                                
+                            </div>
+                           
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                <div class="card z-depth-0 bordered">
+                  <div class="card-header" id="headingThree">
+                    <h5 class="mb-0">
+                      <button class="btn btn-link collapsed font-weight-bold" type="button" style="color: #007041;" data-toggle="collapse"
+                        data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Участники грузоперевозок
+                      </button>
+                    </h5>
+                  </div>
+                  <div id="collapseThree" class="collapse text-center" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                        
+                            <div class="row">
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <p class="font-weight-bold">Отправитель</p>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input text-center" id="individual" name="inlineMaterialRadiosExample" onclick="radioCheckFace()">
+                                            <label class="form-check-label" for="individual">Физическое лицо</label>
+                                          </div>
+                                          <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input" id="entity" name="inlineMaterialRadiosExample" onclick="radioCheckFace()">
+                                            <label class="form-check-label" for="entity">Юридическое лицо</label>
+                                          </div>   
+                                          
+                                          <div style="display: none;" id="individualYes" >
+                                            {{ form.fio_individual|as_crispy_field }}
+                                            {{ form.documents|as_crispy_field }}
+                                            {{ form.passport_individual|as_crispy_field }}
+                                            {{ form.email_individual|as_crispy_field }}
+                                            {{ form.phone_individual|as_crispy_field }}
+                                          </div>
+
+                                          <div style="display: none;" id="entityYes" >
+                                            {{ form.fio_entity|as_crispy_field }}
+                                            {{ form.inn_entity|as_crispy_field }}
+                                            {{ form.contact_person_entity|as_crispy_field }}
+                                            {{ form.email_entity|as_crispy_field }}
+                                            {{ form.phone_entity|as_crispy_field }}
+                                           
+                                          </div>
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6 text-center">
+                                    <p class="font-weight-bold">Получатель</p>
+                                   
+                    
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" class="form-check-input" id="individual1" name="inlineMaterialRadiosExample2" onclick="radioCheckFaceTo()">
+                                        <label class="form-check-label" for="individual1">Физическое лицо</label>
+                                      </div>
+                                      <div class="form-check form-check-inline">
+                                        <input type="radio" class="form-check-input" id="entity1" name="inlineMaterialRadiosExample2" onclick="radioCheckFaceTo()">
+                                        <label class="form-check-label" for="entity1">Юридическое лицо</label>
+                                      </div>
+
+                                      <div style="display: none;" id="individualYes1">
+                                        {{ form.fio_individual|as_crispy_field }}
+                                        {{ form.documents|as_crispy_field }}
+                                        {{ form.passport_individual|as_crispy_field }}
+                                        {{ form.email_individual|as_crispy_field }}
+                                        {{ form.phone_individual|as_crispy_field }}
+                                      </div>
+
+                                      <div style="display: none;" id="entityYes1" >
+                                        {{ form.fio_entity|as_crispy_field }}
+                                        {{ form.inn_entity|as_crispy_field }}
+                                        {{ form.contact_person_entity|as_crispy_field }}
+                                        {{ form.email_entity|as_crispy_field }}
+                                        {{ form.phone_entity|as_crispy_field }}
+                                        
+                                      </div>
+
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6 text-center">
+                                    <p class="font-weight-bold">Плательщик</p>
+                                <div class="btn-group btn-group-toggle" data-toggle="checkbox">
+                                      {{ form.sender_payer|as_crispy_field }}
+                                      &nbsp;
+                                      &nbsp;
+                                      {{ form.recipient_payer|as_crispy_field }}
+                                      &nbsp;
+                                      &nbsp;
+                                        <div class="form-check">
+                                          <input type="checkbox" class="as checkboxinput form-check-input" id="thirdP" onclick="check()">
+                                        <label for="thirdP" class="form-check-label">
+                                          Третье лицо
+                                        </label>
+
+                                      </div>
+                                    </div>
+                                  <div style="display: none;" id="thirdPYes">
+                                    {{ form.third_person_input_payer|as_crispy_field }} 
+                                  </div> 
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6 text-center">
+                                    <p class="font-weight-bold">Заказчик</p>
+                                    <div class="btn-group btn-group-toggle" data-toggle="checkbox">
+                                      {{ form.sender_customer|as_crispy_field }}        
+                                      &nbsp;
+                                      &nbsp;                      
+                                      {{ form.recipient_customer|as_crispy_field }}   
+                                      &nbsp;
+                                      &nbsp;     
+                                        <div class="form-check">             
+                                          <input type="checkbox" class="as1 checkboxinput form-check-input" id="thirdP1" onclick="check()">
+                                        <label for="thirdP1" class="form-check-label">
+                                          Третье лицо
+                                        </label>                              
+
+                                      </div> 
+                                    </div>
+                                      <div style="display: none;" id="thirdP1Yes" >
+                                        {{ form.third_person_input_customer|as_crispy_field }} 
+                                      </div> 
+                                      
+                                    </div>
+                                    <div class="form-group col-md-12 col-sm-6">
+                                      {{ form.pay_cargo|as_crispy_field }}
+                                      {{ form.comment|as_crispy_field }}
+                                    </div>
+                            </div>
+                         
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+            <!--Button-->
+              <button type="submit" style="background-color: #3D3935; border-color: #3D3935;" id="btn" class="btn btn-primary btn-lg btn-block">Оформить заказ</button>
+            
+        </div>
+    </form>
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Расчет</h5>
+        <p class="card-text">Забор груза &nbsp;&nbsp;&nbsp;&nbsp;<strong id="cargo"></strong></p>
+        <p class="card-text" id="inter">Межтерминальная перевозка </p>
+        <p class="card-text">Страхование </p>
+          <p class="card-text" style="display: none">Возврат сопроводительных документов </p>
+          <p class="card-text" style="display: none">Отправка сопроводительных документов </p>
+          <p class="card-text" style="display: none">Погрузо-разгрузочные работы у отправителя </p>
+          <p class="card-text" style="display: none">Погрузо-разгрузочные работы у получателя </p>
+          <p class="card-text" style="display: none">Коммиссия наложенного платежа </p>
+          <p class="card-text" style="display: none">Подтверждение доставки </p>
+        <h5 class="card-title">Сроки</h5>
+        <p class="card-text">Стандарт &nbsp;&nbsp;&nbsp;&nbsp;<strong>3 дня</strong></p>
+        <p class="card-text">Экспресс &nbsp;&nbsp;&nbsp;&nbsp;<strong>2 дня</strong></p>
+          <h5 class="card-title">Общая стоимость</h5>
+      </div>
+    </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript">
+    let cityto = document.querySelector('#id_city_to'),
+        cityfrom = document.querySelector('#id_city_from'),
+        weightto = document.querySelector('#id_weight_one'),
+        weightfrom = document.querySelector('#id_volume_one');
+
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        processData: false,
+        data: JSON.stringify({'cityto': cityto, 'cityfrom': cityfrom, 'weightto': weightto, 'weightfrom': weightfrom}),
+
+    });
+
+    let my_data = '{{ my_data }}',
+        cargo = document.querySelector('#cargo'),
+        weightto_a = document.querySelector('#id_weight_one'),
+        weightfrom_a = document.querySelector('#id_volume_one');
+
+        weightto_a.oninput = function () {
+            cargo.innerHTML = my_data
+        };
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    function radioCheck() {
+        if (document.getElementById('address').checked) {
+            document.getElementById('addressYes').style.display = 'block';
+        }
+        else document.getElementById('addressYes').style.display = 'none';
+
+        if (document.getElementById('term').checked) {
+            document.getElementById('termYes').style.display = 'block';
+        }
+        else document.getElementById('termYes').style.display = 'none';
+    }
+
+    function radioCheckTo() {
+        if (document.getElementById('addressTo').checked) {
+            document.getElementById('addressToYes').style.display = 'block';
+        }
+        else document.getElementById('addressToYes').style.display = 'none';
+
+        if (document.getElementById('termTo').checked) {
+            document.getElementById('termToYes').style.display = 'block';
+        }
+        else document.getElementById('termToYes').style.display = 'none';
+
+    }
+
+    function radioCheckFace() {
+        if (document.getElementById('individual').checked) {
+            document.getElementById('individualYes').style.display = 'block';
+        }
+        else document.getElementById('individualYes').style.display = 'none';
+
+        if (document.getElementById('entity').checked) {
+            document.getElementById('entityYes').style.display = 'block';
+        }
+        else document.getElementById('entityYes').style.display = 'none';
+    }
+
+    function radioCheckFaceTo() {
+        if (document.getElementById('individual1').checked) {
+            document.getElementById('individualYes1').style.display = 'block';
+
+        }
+        else document.getElementById('individualYes1').style.display = 'none';
+
+        if (document.getElementById('entity1').checked) {
+            document.getElementById('entityYes1').style.display = 'block';
+        }
+        else document.getElementById('entityYes1').style.display = 'none';
+
+
+    }
+
+    function check(){
+      if (document.getElementById('thirdP').checked) {
+        document.getElementById('thirdPYes').style.display = 'block';
+      }
+      else document.getElementById('thirdPYes').style.display = 'none';
+
+      if (document.getElementById('thirdP1').checked) {
+        document.getElementById('thirdP1Yes').style.display = 'block';
+      }
+      else document.getElementById('thirdP1Yes').style.display = 'none';
+    }
+
+    function checkPRR() {
+        if (document.getElementById('id_loading_and_unloading_sender').checked) {
+            document.getElementById('prrYes').style.display = 'block';
+        }
+        else document.getElementById('prrYes').style.display = 'none';
+    }
+    function checkPRR_r() {
+        if (document.getElementById('id_loading_and_unloading_recipient').checked) {
+            document.getElementById('prr1Yes').style.display = 'block';
+        }
+        else document.getElementById('prr1Yes').style.display = 'none';
+    }
+    function checkPass() {
+        if (document.getElementById('id_pass_sender_territory').checked) {
+            document.getElementById('pass').style.display = 'block';
+        }
+        else document.getElementById('pass').style.display = 'none';
+    }
+    function checkPaid() {
+        if (document.getElementById('id_paid_entry_sender_territory').checked) {
+            document.getElementById('paid').style.display = 'block';
+        }
+        else document.getElementById('paid').style.display = 'none';
+    }
+    function checkInternal() {
+        if (document.getElementById('id_internal_shipment_number').checked) {
+            document.getElementById('internal').style.display = 'block';
+        }
+        else document.getElementById('internal').style.display = 'none';
+    }
+    function checkCOD() {
+        if (document.getElementById('id_cod').checked) {
+            document.getElementById('cod').style.display = 'block';
+        }
+        else document.getElementById('cod').style.display = 'none';
+    }
+    function checkSecond() {
+        if (document.getElementById('id_second_address').checked) {
+            document.getElementById('second').style.display = 'block';
+        }
+        else document.getElementById('second').style.display = 'none';
+    }
+    function checkPower() {
+        if (document.getElementById('id_power_of_attorney').checked) {
+            document.getElementById('power').style.display = 'block';
+        }
+        else document.getElementById('power').style.display = 'none';
+    }
+    function checkCall() {
+        if (document.getElementById('id_pre_call').checked) {
+            document.getElementById('call').style.display = 'block';
+        }
+        else document.getElementById('call').style.display = 'none';
+    }
+
+    id_declared_value.oninput = function () {
+       document.getElementById('id_insurance').checked = true;
+    }
+
+    $('input.as').on('change', function () {
+        $('input.as').not(this).prop('checked', false);
+    });
+
+    $('input.as1').on('change', function () {
+        $('input.as1').not(this).prop('checked', false);
+    });
+    </script>
+{% endblock %}

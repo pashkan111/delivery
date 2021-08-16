@@ -1,0 +1,44 @@
+{% extends "shared/base.html" %} 
+{% load static %}
+{% block base_content %}
+
+<style>
+    body {
+        font-family: "Gotham Pro";
+        font-size: 18px;
+        background-color: #fdfdfd;
+    }
+    
+    .head_text {
+        color: white;
+    }
+    
+    .card {
+        box-shadow: 0 16px 48px #E3E7EB;
+    }
+    .card-link{
+        color: #007041;
+    }
+</style>
+
+<h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Новости</h4>
+<div class="container">
+    <div class="row">
+        
+        <div class="col-xl">
+            {% for post in post_list %}
+     
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ post.title }}</h2>
+                        <p class="card-text text-muted h6">{{ post.created_on}} </p>
+                        <p class="card-text">{{post.text|slice:":1000" | safe}}</p>
+                        <a href="{% url 'news_detail' post.slug  %}" class="card-link">Узнать больше &rarr;</a>
+                    </div>
+                </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</div>
+{%endblock%}

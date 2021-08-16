@@ -1,0 +1,229 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+
+<h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Базы данных</h4>
+<ul class="nav nav-tabs justify-content-center" style="padding-top: 50px;">
+    <li class="nav-item">
+      <a class="nav-link active" style="color: #007041;" data-toggle="tab" href="#tracking">Трекинг</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#order">Заявки</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#orderStatus">Статусы заявок</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#calc">Калькулятор (доставка)</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#term">Калькулятор (сроки)</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#cities">Города</a>
+      </li>
+  </ul>
+  <div class="tab-content p-3">
+    <div class="tab-pane fade show active" id="tracking">
+        <div class="container" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Номер трекинга</th>
+                        <th scope="col">Номер трекинга клиента</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата доставки</th>
+                        <th scope="col">Статус оплаты</th>
+                        <th scope="col">Направление</th>
+                    </tr>
+                </thead>
+                {% for track in tracks %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ track.id }}</th>
+                        <td>{{ track.tracking_number }}</td>
+                        <td>{{ track.tracking_number_client }}</td>
+                        <td>{{ track.status }}</td>
+                        <td>{{ track.delivery_date }}</td>
+                        <td>{{ track.status_pay }}</td>
+                        <td>{{ track.route }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="order">
+        <div class="container-fluid" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Город отправления</th>
+                        <th scope="col">Город получения</th>
+                        <th scope="col">Адрес отправления</th>
+                        <th scope="col">Терминал отправления</th>
+                        <th scope="col">Адрес получения</th>
+                        <th scope="col">Терминал получения</th>
+                        <th scope="col">Дата забора груза</th>
+                        <th scope="col">Вид перевозки</th>
+                        <th scope="col">Характер груза</th>
+                        <th scope="col">Интервал доставки</th>
+                        <th scope="col">1место длина</th>
+                        <th scope="col">1место ширина</th>
+                        <th scope="col">1место высота </th>
+                        <th scope="col">1место вес</th>
+                        <th scope="col">1место объем</th>
+                        <th scope="col">1место количество</th>
+                        <th scope="col">Форма оплаты</th>
+                    </tr>
+                </thead>
+                {% for order in orders %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ order.id }}</th>
+                        <td>{{ order.city_to }}</td>
+                        <td>{{ order.city_from }}</td>
+                        <td>{{ order.address_from }}</td>
+                        <td>{{ order.terminal_from }}</td>
+                        <td>{{ order.address_to }}</td>
+                        <td>{{ order.terminal_to }}</td>
+                        <td>{{ order.date_cargo }}</td>
+                        <td>{{ order.type_transporation }}</td>
+                        <td>{{ order.nature_cargo }}</td>
+                        <td>{{ order.interval }}</td>
+                        <td>{{ order.length_one }}</td>
+                        <td>{{ order.width_one }}</td>
+                        <td>{{ order.height_one }}</td>
+                        <td>{{ order.weight_one }}</td>
+                        <td>{{ order.volume_one }}</td>
+                        <td>{{ order.place_quantity }}</td>
+                        <td>{{ order.pay_cargo }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="orderStatus">
+        <div class="container" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Номер заявки</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата доставки</th>
+                    </tr>
+                </thead>
+                {% for orderstatus in orderstatuss %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ orderstatus.id }}</th>
+                        <td>{{ orderstatus.order_number }}</td>
+                        <td>{{ orderstatus.status }}</td>
+                        <td>{{ orderstatus.delivery_date }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="calc">
+        <div class="container" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Город отправления</th>
+                        <th scope="col">Город получения</th>
+                        <th scope="col">Вес от</th>
+                        <th scope="col">Вес до</th>
+                        <th scope="col">Межтерминальная</th>
+                        <th scope="col">Экспедирование1</th>
+                        <th scope="col">Экспедирование2</th>
+                        <th scope="col">Надбавка</th>
+                    </tr>
+                </thead>
+                {% for calc in calcs %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ calc.id }}</th>
+                        <td>{{ calc.cityto }}</td>
+                        <td>{{ calc.cityfrom }}</td>
+                        <td>{{ calc.weightto }}</td>
+                        <td>{{ calc.weightfrom }}</td>
+                        <td>{{ calc.inter_terminal }}</td>
+                        <td>{{ calc.pickup }}</td>
+                        <td>{{ calc.cargo_delivery }}</td>
+                        <td>{{ calc.premium }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="term">
+        <div class="container" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Город отправления</th>
+                        <th scope="col">Город получения</th>
+                        <th scope="col">Срок Стандарт от</th>
+                        <th scope="col">Срок Стандарт до</th>
+                        <th scope="col">Срок Экспресс от</th>
+                        <th scope="col">Срок Экспресс до</th>
+                    </tr>
+                </thead>
+                {% for term in terms %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ term.id }}</th>
+                        <td>{{ term.cityto }}</td>
+                        <td>{{ term.cityfrom }}</td>
+                        <td>{{ term.term_standart_to }}</td>
+                        <td>{{ term.term_standart_from }}</td>
+                        <td>{{ term.term_express_to }}</td>
+                        <td>{{ term.term_express_from }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="cities">
+        <div class="container" style="padding-top: 10px;">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><abbr title="ID">ID</abbr></th>
+                        <th scope="col">Города</th>
+                    </tr>
+                </thead>
+                {% for city in cities %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ city.id }}</th>
+                        <td>{{ city.cities }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+  </div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js">
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $.ajax({
+        url: '{% url "db" %}',
+        type: 'get',
+    });
+</script>

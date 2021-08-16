@@ -1,0 +1,33 @@
+{% extends 'shared/base.html' %} 
+
+{% block base_content %}  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<h4 class="mb-4 text-center text-uppercase subtitle" style="padding-top: 10px;" >Местонахождение и информация по грузу</h4>
+
+
+<div  class="container">
+    <div class="jumbotron"> 
+        <form  action="{% url 'search' %}" method="get">
+
+            <div class="form-group col-md-12 col-sm-12">
+                <input  name="q" class="form-control" type="text" placeholder="Введите номер заказа или накладной 123456789123g">
+            </div>
+            <div class="col-md-12 col-12 ">
+            <input type="submit" style="background-color: #3D3935; border-color: #3D3935;"  id="btn" class="btn btn-primary btn-lg btn-block" value="Проверить">
+            </div>
+            <dl class="dl-horizontal text-center  pt-4 animate__animated animate__fadeInUp">
+                {% for my_object in object_list %}
+                <dd>№ заказа\накладной: {{ my_object.tracking_number }}</dd>
+                <dd >Статус груза: {{ my_object.status }}</dd>
+                <dd  >Дата доставки: {{my_object.delivery_date }}</dd>
+                <dd >Статус оплаты: {{my_object.status_pay }}</dd>
+                <dd >Направление: {{my_object.route }}</dd>
+                {% endfor %}
+            </dl>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
