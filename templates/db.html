@@ -12,6 +12,7 @@
     <li class="nav-item">
       <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#orderStatus">Статусы заявок</a>
     </li>
+
     <li class="nav-item">
         <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#calc">Калькулятор (доставка)</a>
       </li>
@@ -68,13 +69,13 @@
                         <th scope="col">Дата забора груза</th>
                         <th scope="col">Вид перевозки</th>
                         <th scope="col">Характер груза</th>
-                        <th scope="col">Интервал доставки</th>
+                        <th scope="col">Интервал доставки, от</th>
+                        <th scope="col">Интервал доставки, до</th>
                         <th scope="col">1место длина</th>
                         <th scope="col">1место ширина</th>
                         <th scope="col">1место высота </th>
                         <th scope="col">1место вес</th>
                         <th scope="col">1место объем</th>
-                        <th scope="col">1место количество</th>
                         <th scope="col">Форма оплаты</th>
                     </tr>
                 </thead>
@@ -87,17 +88,17 @@
                         <td>{{ order.address_from }}</td>
                         <td>{{ order.terminal_from }}</td>
                         <td>{{ order.address_to }}</td>
-                        <td>{{ order.terminal_to }}</td>
+                        <td>{{ order.terminal_to }}</td> 
                         <td>{{ order.date_cargo }}</td>
                         <td>{{ order.type_transporation }}</td>
                         <td>{{ order.nature_cargo }}</td>
-                        <td>{{ order.interval }}</td>
+                        <td>{{ order.interval1 }}</td>
+                        <td>{{ order.interval2 }}</td>
                         <td>{{ order.length_one }}</td>
                         <td>{{ order.width_one }}</td>
                         <td>{{ order.height_one }}</td>
                         <td>{{ order.weight_one }}</td>
                         <td>{{ order.volume_one }}</td>
-                        <td>{{ order.place_quantity }}</td>
                         <td>{{ order.pay_cargo }}</td>
                     </tr>
                 </tbody>
@@ -206,7 +207,7 @@
                 <tbody>
                     <tr>
                         <th scope="row">{{ city.id }}</th>
-                        <td>{{ city.cities }}</td>
+                        <td>{{ city.name }}</td>
                     </tr>
                 </tbody>
                 {% endfor %}
@@ -222,8 +223,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    $.ajax({
+    {% comment %} $.ajax({
         url: '{% url "db" %}',
         type: 'get',
-    });
+    }); {% endcomment %}
 </script>

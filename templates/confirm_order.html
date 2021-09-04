@@ -1,0 +1,152 @@
+{% extends "shared/base.html" %}
+
+{% block base_content %}
+{% comment %} {% for k, v in data.items %} {% endcomment %}
+<h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Проверка введенных данных</h4>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <div class='gabarity'>                   
+                   <p><b>Габариты груза: </b>{{data.length_one}}м x {{data.width_one}}м x {{data.height_one}}м</p>
+                   <p><b>Вес груза: </b>{{data.weight_one}}кг</p>
+                   <p><b>Объем груза: </b>{{data.volume_one}}м3</p>
+                   <p><b>Тип груза: </b>{{data.nature_cargo}}</p>
+                   <p><b>Вид перевозки: </b>{{data.type_transporation}}</p>  
+                </div>
+                
+                <div class='from_to'>                   
+                   <p><b>Откуда: </b>г. {{data.city_from}}</p>
+                   <p><b>Адрес отправления: </b>{% if data.address_from %}{{data.address_from}}{% else %}{{data.terminal_from}}{% endif %}</p>
+                   <p><b>Куда: </b>г. {{data.city_to}}</p>
+                   <p><b>Адрес получения: </b>{% if data.address_to %}{{data.address_to}}{% else %}{{data.terminal_to}}{% endif %}</p>
+                </div>
+
+                <div class='date'>                   
+                   <p><b>Дата выполнения заказа: </b>{{data.date_cargo}}</p>
+                   <p><b>Время выполнения заказа: </b>от {{data.interval1}} до {{data.interval2}}</p>
+                </div>
+
+                <div class='dop_services'>
+                   <p><b>Дополнительные услуги: </b></p>
+                   <p>{% if data.insurance %}Страховка{% endif %}</p>
+                   <p>{% if data.declared_value %}Объявленная стоимость: {{data.declared_value}}{% endif %}</p>
+                   <p>{% if data.return_of_accompanying_documents %}Возврат сопроводительных документов{% endif %}</p>
+                   <p>{% if data.sending_accompanying_documents %}Отправка сопроводительных документов{% endif %}</p>
+                   <p>{% if data.loading_and_unloading_sender %}Погрузо-разгрузочные работы у отправителя{% endif %}</p>
+                   <p>{% if data.service_lift_sender %}Грузовой лифт: да{% endif %}</p>
+                   <p>{% if data.floor_sender %}Этаж: {{data.floor_sender}} {% endif %}</p>
+                   <p>{% if data.carry_sender %}Пронос: {{data.carry_sender}} м{% endif %}</p>
+
+                   <p>{% if data.loading_and_unloading_recipient %}Погрузо-разгрузочные работы у получателя{% endif %}</p>      
+                   
+                    <p>{% if data.service_lift_recipient %}Грузовой лифт: да{% endif %}</p>
+                   <p>{% if data.floor_recipient %}Этаж: {{data.floor_recipient}} {% endif %}</p>
+                   <p>{% if data.carry_recipient %}Пронос: {{data.carry_recipient}} м{% endif %}</p>
+                   
+                   <p>{% if data.pass_sender_territory %}
+                        {% if data.order_per_hour %}
+                        Пропуск на территорию отправителя: на час
+                        {% elif data.order_per_day %}
+                        Пропуск на территорию отправителя: на сутки
+                        {% endif %}</p>
+                        {% endif %}</p>
+
+                   <p>{% if data.registration_for_shipment %}Запись на отгрузку{% endif %}</p>
+
+                   <p>{% if data.paid_entry_sender_territory and data.sum and data.reimbursement_method %}
+                        Платный въезд на территорию отправителя
+                        <p>Сумма: {{data.sum}}</p>
+                        <p>Способ возмещения: {{data.reimbursement_method}}</p>
+                   {% endif %}</p>
+
+                   <p>{% if data.info_internal_shipment_number %}Внутренний номер отгрузки: {{data.info_internal_shipment_number}}{% endif %}</p>
+                   <p>{% if data.cod_input %}Наложенный платеж: {{data.cod_input}}{% endif %}</p>
+                   <p>{% if data.second_address %}Заезд на второй адрес{% endif %}</p>
+                   <p>{% if data.delivery_confirmation %}Подтверждение доставки{% endif %}</p>
+                   <p>{% if data.power_of_attorney and data.info_proxy %}Доверенность{% endif %}</p>
+                   <p>{% if pre_call %}Предварительный звонок{% endif %}</p>
+                </div>
+
+                <div class='packing'>                   
+                   <p><b>Упаковка груза: </b></p>
+                   <p>{% if data.rigid_packaging %}Жесткая упаковка{% endif %}</p>
+                   <p>{% if data.pallet_board %}Паллетный борт{% endif %}</p>
+                   <p>{% if data.bag %}Мешок{% endif %}</p>
+                   <p>{% if data.cardboard_box %}Картонная коробка{% endif %}</p>
+                   <p>{% if data.pallet %}Палет{% endif %}</p>
+                   <p>{% if data.strapping %}Стреппинг{% endif %}</p>
+                   <p>{% if data.stretch %}Стрейч - пленка{% endif %}</p>
+                   <p>{% if data.air_bubble %}Воздушно - пузырьковая пленка{% endif %}</p>
+ 
+                </div>
+            </div>
+
+            <div class="col-md-6">
+            <div class="row">
+
+                <div class='sender'>
+                    <p class='main_p'><b>Отправитель: </b></p>
+                    {% if not data.fio_individual %}
+                        <p><b>Юридическое лицо</b></p>
+                        <p><b>Название компании: </b>{{data.fio_entity}}</p>
+                        <p><b>ИНН: </b>{{data.inn_entity}}</p>
+                        <p><b>Контактное лицо: </b>{{data.contact_person_entity}}</p>
+                        <p><b>email: </b>{{data.email_entity}}</p>
+                        <p><b>Контактный телефон: </b>{{data.phone_entity}}</p>      
+                    {% else %}
+                        <p><b>Физическое лицо</b></p>
+                        <p><b>ФИО: </b>{{data.fio_individual}}</p>
+                        <p><b>Тип документа: </b>{{data.documents}}</p>
+                        <p><b>Номер документа: </b>{{data.passport_individual}}</p>
+                        <p><b>email: </b>{{data.email_individual}}</p>
+                        <p><b>Контактный телефон: </b>{{data.phone_individual}}</p>      
+                    {% endif %}
+                </div>
+
+                <div class='accepter'>
+                    <p class='main_p'><b>Получатель: </b></p>
+                    {% if not data.fio_individual_p %}
+                        <p><b>Юридическое лицо</b></p>
+                        <p><b>Название компании: </b>{{data.fio_entity_p}}</p>
+                        <p><b>ИНН: </b>{{data.inn_entity_p}}</p>
+                        <p><b>Контактное лицо: </b>{{data.contact_person_entity_p}}</p>
+                        <p><b>email: </b>{{data.email_entity_p}}</p>
+                        <p><b>Контактный телефон: </b>{{data.phone_entity_p}}</p>      
+                    {% else %}
+                        <p><b>Физическое лицо</b></p>
+                        <p><b>ФИО: </b>{{data.fio_individual_p}}</p>
+                        <p><b>Тип документа: </b>{{data.documents_p}}</p>
+                        <p><b>Номер документа: </b>{{data.passport_individual_p}}</p>
+                        <p><b>email: </b>{{data.email_individual_p}}</p>
+                        <p><b>Контактный телефон: </b>{{data.phone_individual_p}}</p>      
+                    {% endif %}     
+                </div>
+
+            </div>
+                    <div >
+                        <p class='main_p'><b>Форма оплаты: </b></p>
+                        <p>{{data.pay_cargo}}</p>
+                    </div>
+                    <div >
+                        <p class='main_p'><b>Комментарий: </b></p>
+                        <div>{{data.comment}}</div>
+                    </div>
+                    <div>
+                        <form action={% url 'confirm_data' %} method="post">
+                            {% csrf_token %}
+                            <input value="Отправить заявку", type="submit"/>
+                        </form>
+                    </div>
+            </div>
+
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+{% comment %} {% endfor %} {% endcomment %}
+{% endblock %}

@@ -5,17 +5,22 @@
 {% block base_content %}
 <h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Калькулятор</h4>
 <div class="container">
-    <div class="jumbotron">
+    <div class="jumbotron" style="y-index: 1; z-index: 1; position: relative;
+     display: inline-block; ">
     <form action="{% url 'calc' %}"  method="POST" >
       {% csrf_token %}
         <div class="row mb-3">
-            <div id="q" class="form-group col-md-6 col-sm-6">
+            <div class="form-group col-md-6 col-sm-6">
                 <!-- <p class="cityfrom_p">Откуда</p> -->
                 <input placeholder="Откуда" type="text" class="form-control" id="cityfrom" required="" />
             </div>
             <div class="form-group col-md-6 col-sm-6">
                 <!-- <p class="">Куда</p> -->
                 <input placeholder="Куда" type="text" class="form-control"  id="cityto" required=""/>
+            </div>
+            <div class="form-group col-md-4 col-sm-6">
+                <!-- <p class="">Кол-во мест</p> -->
+                <input placeholder="Кол-во мест" type="number"  class="form-control" id="quantity" required=""  />
             </div>
             <div class="form-group col-md-4 col-sm-6">
               <!-- <p class="">Вес груза</p> -->
@@ -25,40 +30,46 @@
               <!-- <p class="">Объем</p> -->
               <input placeholder="Объем" type="number"  class="form-control" id="volume" required=""/>
             </div>
-            <div class="form-group col-md-4 col-sm-6">
-                <!-- <p class="">Кол-во мест</p> -->
-                <input placeholder="Кол-во мест" type="number"  class="form-control" id="quantity" required=""  />
-            </div>
     
             <div class="custom-control custom-checkbox">
             <div class="form-group form-check" style="visibility: visible;">
-                <input type="checkbox" id="pickUp"  class="custom-control-input"/>
-                <label class="custom-control-label" for="pickUp">Необходимо забрать груз с адреса</label>
+                <input type="checkbox" id="delivery_from"  class="custom-control-input"/>
+                <label class="custom-control-label" for="delivery_from">Необходимо забрать груз с адреса</label>
             </div>
             <div class="form-group form-check" style="visibility: visible;">
-                <input type="checkbox" id="delivery"  class="custom-control-input"/>
-                <label class="custom-control-label" for="delivery">Необходимо доставить груз до адреса</label>
+                <input type="checkbox" id="delivery_to"  class="custom-control-input"/>
+                <label class="custom-control-label" for="delivery_to">Необходимо доставить груз до адреса</label>
             </div>
             </div>
 
-            <table class="table">
-                <thead> 
+            <table class="table" style="width: 100%">
+                <colgroup>
+                  <col span="1" style="width: 20%;">
+                  <col span="1" style="width: 40%;">
+                  <col span="1" style="width: 40%;">
+                </colgroup>
+                <thead style="text-align: center"> 
                   <tr>
                     <th scope="col"></th>
                     <th scope="col">Стоимость</th>
                     <th scope="col">Срок</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody style="text-align: center">
                   <tr>
                     <th scope="row">Стандарт</th>
                     <td id="standartCost"></td>
                     <td id="standartTerm"></td>
                   </tr>
                   <tr>
-                    <th scope="row">Экспресс</th>
+                    <th scope="row" >Экспресс</th>
                     <td id="expressCost"></td>
                     <td id="expressTerm"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Конверт</th>
+                    <td id="convertCost"></td>
+                    <td id="convertTerm"></td>
                   </tr>
                 </tbody>
               </table>
@@ -69,237 +80,318 @@
             </div>
               <div class="row mb-3"> 
               <div class="col-md-12 col-12 ">
-               <a href="/order/" style="visibility: hidden; text-decoration: none; " target="_blank"> <input type="button" style="background-color: #3D3935; border-color: #3D3935;"  id="orderBtn" class="btn btn-primary btn-lg btn-block" value="Оформить заявку"/> </a>
+               <a href="/order/" > <input type="button" style="background-color: #3D3935; border-color: #3D3935; display: none"  id="order" class="btn btn-primary btn-lg btn-block" value="Оформить заявку"/> </a>
               </div>
             </div>
     </form>
     </div>
 </div>
+{% comment %} <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> {% endcomment %}
 
+{% comment %} <script type="text/javascript" src="{% static 'js/calc.js' %}"></script> {% endcomment %}
 <script>
-    window.onload = function(e){
-      const cityfrom = document.getElementById('cityfrom').value;
-      const cityto = document.getElementById('cityto').value;
-      const quantity = document.getElementById('quantity').value;
-      const weight = document.getElementById('weight').value;
-      const volume = document.getElementById('volume').value;
-      const pickUp = document.getElementById('pickUp').checked;
-      const delivery = document.getElementById('delivery').checked;
 
-      const standartCost = document.getElementById('standartCost');
-      const standartTerm = document.getElementById('standartTerm');
-      const expressCost = document.getElementById('expressCost');
-      const expressTerm = document.getElementById('expressTerm');
-      
-      const cities=[]
-      fetch('http://127.0.0.1:8000/api/get-cities')
-        .then((response) => {
-          return response.json();
-        }).then(function(data){
-          data.map(i => {
-            cities.push(i.name)
-          })
+{% comment %} const btnStyles = 'border:1px solid;'
+const btnStyles2 = "background-color: #3D3935; border-color: #3D3935;" {% endcomment %}
+const cities=[]
+
+window.onload = function(e){
+
+
+    fetch('http://127.0.0.1:8000/api/get-cities')
+      .then((response) => {
+        return response.json();
+      }).then(function(data){
+        data.map(i => {
+          cities.push(i.name)
         })
-      autocomplete(document.getElementById("cityto"), cities);
-      autocomplete(document.getElementById("cityfrom"), cities);
-    }
-    
-    function autocomplete(inp, arr) {
-        inp.addEventListener("input", function(e) {
-          let a, b, i, val = this.value;
-          closeAllLists();
-          if (!val) {
-            return false;
-            }
-          currentFocus = -1;
-          a = document.createElement("DIV");
-          a.setAttribute("id", this.id + "autocomplete-list");
-          a.setAttribute("class", "autocomplete-items");
+      })
 
-          this.parentNode.appendChild(a);
-          /*for each item in the array...*/
-          for (i = 0; i < arr.length; i++) {
-            /*check if the item starts with the same letters as the text field value:*/
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-              /*create a DIV element for each matching element:*/
-              b = document.createElement("DIV");
-              /*make the matching letters bold:*/
-              b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-              b.innerHTML += arr[i].substr(val.length);
-              /*insert a input field that will hold the current array item's value:*/
-              b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-              /*execute a function when someone clicks on the item value (DIV element):*/
-                  b.addEventListener("click", function(e) {
-                  /*insert the value for the autocomplete text field:*/
-                  inp.value = this.getElementsByTagName("input")[0].value;
-                  /*close the list of autocompleted values,
-                  (or any other open lists of autocompleted values:*/
-                  closeAllLists();
-              });
-              a.appendChild(b);
+
+    
+    const cityfrom = document.getElementById('cityfrom')
+    const cityto = document.getElementById('cityto');
+    const volume = document.getElementById('volume');
+    const weight = document.getElementById('weight');
+    const quantity = document.getElementById('quantity')
+
+    const inputStyles = 'border:1px solid blue; box-shadow:0 0 5px blue;'
+
+    autocomplete(cityto, cities);
+    autocomplete(cityfrom, cities);
+
+      listOfInputs = document.querySelectorAll('input')
+      
+      listOfInputs.forEach((elem) => {
+        elem.addEventListener('mouseenter', (e) => {
+          e.target.style.cssText = inputStyles
+      })
+
+        elem.addEventListener('mouseleave', (e) => {
+          e.target.style = 'none'
+      })
+    })
+}
+  
+  function autocomplete(inp, arr) {
+      inp.addEventListener("input", function(e) {
+        let a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) {
+          return false;
+        } 
+        currentFocus = -1;
+        a = document.createElement("DIV");
+
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+
+
+        this.parentNode.appendChild(a);
+        /*for each item in the array...*/
+        for (i = 0; i < arr.length; i++) {
+          /*check if the item starts with the same letters as the text field value:*/
+          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            /*create a DIV element for each matching element:*/
+            b = document.createElement("DIV");
+            /*make the matching letters bold:*/
+            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+            b.innerHTML += arr[i].substr(val.length);
+            /*insert a input field that will hold the current array item's value:*/
+            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+            /*execute a function when someone clicks on the item value (DIV element):*/
+                b.addEventListener("click", function(e) {
+                /*insert the value for the autocomplete text field:*/
+                inp.value = this.getElementsByTagName("input")[0].value;
+                /*close the list of autocompleted values,
+                (or any other open lists of autocompleted values:*/
+                closeAllLists();
+            });
+            a.appendChild(b);
+          }
+        }
+    });
+    
+        inp.addEventListener("keydown", function(e) {
+          let x = document.getElementById(this.id + "autocomplete-list");
+          if (x) x = x.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+          } else if (e.keyCode == 38) { 
+            currentFocus--;
+            addActive(x);
+          } else if (e.keyCode == 13) {
+            /*If the ENTER key is pressed, prevent the form from being submitted,*/
+            e.preventDefault();
+            if (currentFocus > -1) {
+              /*and simulate a click on the "active" item:*/
+              if (x) x[currentFocus].click();
             }
           }
-      });
-          inp.addEventListener("keydown", function(e) {
-            const x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40) {
-              currentFocus++;
-              addActive(x);
-            } else if (e.keyCode == 38) { 
-              currentFocus--;
-              addActive(x);
-            } else if (e.keyCode == 13) {
-              /*If the ENTER key is pressed, prevent the form from being submitted,*/
-              e.preventDefault();
-              if (currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
-              }
-            }
-      });
-        function addActive(x) {
-          /*a function to classify an item as "active":*/
-          if (!x) {
-            return false
-          };
-          /*start by removing the "active" class on all items:*/
-          removeActive(x);
-          if (currentFocus >= x.length) currentFocus = 0;
-          if (currentFocus < 0) currentFocus = (x.length - 1);
-          /*add class "autocomplete-active":*/
-          x[currentFocus].classList.add("autocomplete-active");
-        }
-        function removeActive(x) {
-          /*a function to remove the "active" class from all autocomplete items:*/
-          for (let i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-          }
-        }
-        function closeAllLists(elmnt) {
-          /*close all autocomplete lists in the document,
-          except the one passed as an argument:*/
-          const x = document.getElementsByClassName("autocomplete-items");
-          for (let i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-            x[i].parentNode.removeChild(x[i]);
-          }
+    });
+      function addActive(x) {
+        /*a function to classify an item as "active":*/
+        if (!x) {
+          return false
+        };
+        /*start by removing the "active" class on all items:*/
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        /*add class "autocomplete-active":*/
+        x[currentFocus].classList.add("autocomplete-active");
+      }
+      function removeActive(x) {
+        /*a function to remove the "active" class from all autocomplete items:*/
+        for (let i = 0; i < x.length; i++) {
+          x[i].classList.remove("autocomplete-active");
         }
       }
-    /*execute a function when someone clicks in the document:*/
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
+      function closeAllLists(elmnt) {
+        /*close all autocomplete lists in the document,
+        except the one passed as an argument:*/
+        const x = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < x.length; i++) {
+          if (elmnt != x[i] && elmnt != inp) {
+          x[i].parentNode.removeChild(x[i]);
+        }
+      }
+    }
+  /*execute a function when someone clicks in the document:*/
+      document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+      });
+}
+
+  function checkInputData(){
+    const cityfrom = document.getElementById('cityfrom');
+    const cityto = document.getElementById('cityto');
+    const volume = document.getElementById('volume');
+    const weight = document.getElementById('weight');
+    
+    const inputData = [cityfrom, cityto, volume, weight]
+
+    const checkCity_c = checkCity([cityfrom.value, cityto.value])
+    for(let i=0; i<inputData.length; i++){
+        if (!(inputData[i].value)){
+          inputData[i].style.borderColor = '#f71616'
+          inputData[i].style.boxShadow = '0 0 7px #d45252'
+        } else if (checkCity_c.length != 0){
+          checkCity_c.forEach(j => {
+            inputData[j].style.borderColor = '#f71616'
+            inputData[j].style.boxShadow = '0 0 7px #d45252'
+          })
+        }
+    }
+}
+
+
+    function checkCity(arrOfCities){
+      const checkCities = []
+      arrOfCities.forEach((elem, i) => {
+        if(cities.indexOf(elem) == -1){
+          checkCities.push(i)
+        }
+      })
+      return checkCities
+    }
+
+
+    function insertData(data){
+        standartCost = document.getElementById('standartCost')
+        standartTerm = document.getElementById('standartTerm')
+        expressCost = document.getElementById('expressCost')
+        expressTerm = document.getElementById('expressTerm')
+        convertTerm = document.getElementById('convertTerm')
+        convertCost = document.getElementById('convertCost')
+
+        standartCost.innerHTML = `${data['price_standart']} руб`
+        standartTerm.innerHTML = makeText(data["times"]["term_standart_from"], data["times"]["term_standart_to"])
+        expressCost.innerHTML = `${data['price_express']} руб`
+        makeText(data["times"]["term_express_from"], data["times"]["term_express_to"])
+        expressTerm.innerHTML = makeText(data["times"]["term_express_from"], data["times"]["term_express_to"])
+        convertTerm.innerHTML = makeText(data["times"]["term_standart_from"], data["times"]["term_standart_to"])
+        convertCost.innerHTML = `${data['convert_price']} руб`
+        return true
+    }
+
+    function getButton(){
+      orderBtn = document.getElementById('order')
+      btn = document.getElementById('btn')
+      btn.style.backgroundColor = '#e9ecef'
+      btn.style.color = '#3D3935'
+      btn.style.boxShadow = 'none'
+      orderBtn.style.display = 'inline-block'
+    }
+
+
+    function checkTime(time1, time2){
+      if (time1 == time2){
+        return true
+      } else{
+        return false
+      }
+    }
+
+    function makeText(time1, time2){
+      const check = checkTime(time1, time2) 
+      if (!check){
+        return `от ${time1} до ${time2} дней`
+      } else{
+        define = defineTime(Number(time1))
+        return `${time1} ${define}`
+      }
   }
 
-    function checkInputData(data){
-      const cityfrom = document.getElementById('cityfrom');
-      const cityto = document.getElementById('cityto').value;
-      const quantity = document.getElementById('quantity').value;
-      const weight = document.getElementById('weight').value;
-      if(!cityfrom.value){
-        const error = document.createElement('span')
-        error.className='error'
-        error.style.color = 'red'
-        // error.style.display = 'inline'
-        // error.style.margin = '0'
-        q = document.getElementById('q')
-        q.style.display = 'inline-block'
-        error.innerHTML = 'Это поле не может быть пустым'
-        cityfrom.style.borderColor = '#f71616'
-        cityfrom.style.boxShadow = '0 0 7px #d45252'
-        cityfrom.parentNode.insertBefore(error, cityfrom)
-      }
-      if(!cityto){
-        console.log(222)
-      }
-      if(!quantity){
-        console.log(222)
-      }
-      if(!weight){
-        console.log(222)
-      }
-      // keys = Object.keys(data).slice(0,4)
-      // console.log(keys)
-      // for(i=0; i<keys.length; i++){
-      //   if(!data[keys[i]]){
-      //     console.log(i)
-      //   }
-      // }
+    function defineTime(time){
+      if(time==1){
+        return 'день'
+      }else if(time==2||time==3||time==4){
+        return 'дня'
+      }else if(time>4){
+        return 'дней'
+    }
+  }
+
+  function calc(){
+    const cityfrom = document.getElementById('cityfrom').value;
+    const cityto = document.getElementById('cityto').value;
+    const quantity = document.getElementById('quantity').value;
+    const weight = document.getElementById('weight').value;
+    const volume = document.getElementById('volume').value;
+    const delivery_from = document.getElementById('delivery_from').checked;
+    const delivery_to = document.getElementById('delivery_to').checked;
+
+    const standartCost = document.getElementById('standartCost');
+    const standartTerm = document.getElementById('standartTerm');
+    const expressCost = document.getElementById('expressCost');
+    const expressTerm = document.getElementById('expressTerm');
+
+    const struct = {
+      cityfrom: cityfrom,
+      cityto: cityto,
+      weight: weight,
+      volume: volume,
+      quantity: quantity,
+      delivery_from: delivery_from,
+      delivery_to: delivery_to
+    };
+
+    checkInputData()
+
+    if (cityto  && cityfrom  && weight && volume){
+
+      
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+        async function postData(url, data) {
+          const response = await fetch(url, {
+            method: 'POST',
+            cache: 'no-cache', 
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+              "X-CSRFTOKEN":  csrftoken
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer', 
+            body: JSON.stringify(data) 
+          });
+          return await response.json(); 
+        }
+        
+        postData('http://127.0.0.1:8000/api/post-calc', struct)
+           .then((data) => {
+             data = JSON.parse(data)
+             ins = insertData(data)
+             if (ins) {
+               getButton()
+             } else{
+               insertData(data)
+             }
+
+           });
+
+       };
     }
 
-    function printError(){
-      const error = document.createElement('span')
-      error.className='error'
-      error.style.color = 'red'
-      error.innerHTML = 'Это поле не может быть пустым'
-      cityfrom.parentNode.insertBefore(error, cityfrom)
-    }
-
-    function calc(){
-
-          async function fetchText() {
-              let response = await fetch('http://127.0.0.1:8000/api/get-cities');
-              let data = await response.json().then(
-                (data) => data
-              );
-              
-          }
-          console.log(fetchText())
-
-          fetch('http://127.0.0.1:8000/api/get-cities')
-            .then((response) => {
-              return response.json();
-            }).then(function(data){
-              console.log(data)
-            })
-
-      const struct = {
-        cityfrom: cityfrom,
-        cityto: cityto,
-        quantity: quantity,
-        weight: weight,
-        volume: volume,
-        pickUp: pickUp,
-        delivery: delivery
-      };
-      // a=checkInputData(struct)
-      // console.log(struct)
-
-      // if (cityto != '' && cityfrom != '' && quantity != '' && weight != '' && volume != ''){
-      //   req.onload = function(){
-      //     let res_calc = JSON.stringify(this.responseText);
-      //     if (res_calc.inter_terminal){
-      //       st_full = 0;
-      //       ex_full = 0;
-      //       if (pickUp == true){
-      //         st_full = st_full + res_calc.pickup;
-      //         ex_full = ex_full + res_calc.pickup;
-      //       }
-      //       if (delivery == true) {
-      //         st_full = st_full + res_calc.cargo_delivery;
-      //         ex_full = ex_full + res_calc.cargo_delivery;
-      //       }
-
-      //       st_full = st_full + res_calc.inter_terminal;
-      //       ex_full = ex_full + res_calc.inter_terminal;
-
-      //       standartCost.innerHTML = st_full + " р. ";
-      //       standartTerm.innerHTML = 3 - 5;
-      //       expressCost.innerHTML = ex_full + " р. ";
-      //       expressTerm.innerHTML = 1 - 3;
-
-      //     }
-          
-      //   }
-      //   req.open('GET', '/calc/', struct, true);
-      //   req.setRequestHeader('content-type', 'application/json; charset=UTF-8');
-      //   req.send();
-      }
-    // }
-
-</script>
-
+</script> 
 
 <style>
   .reveal{

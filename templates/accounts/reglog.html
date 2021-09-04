@@ -14,16 +14,16 @@
 <div class="container-reg-log">
     <div class="forms-container">
         <div class="signin-signup">
-            <form action="#" method="POST" class="sign-in-form">
+            <form action="{% url 'login' %}" method="POST" class="sign-in-form">
                 {% csrf_token %}
                 <h2 class="title">Вход</h2>
                 <div class="input-field">
                     <i class="fas fa-user"></i>
-                    <input type="text" name="login" placeholder="Логин"/>
+                    <input type="text" name="email" placeholder="Введите email"/>
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="psw" placeholder="Пароль"/>
+                    <input type="password" name="password" placeholder="Пароль"/>
                 </div>
                 <div>
                     <i></i>
@@ -42,20 +42,20 @@
                     </a>
                 </div>
             </form>
-            <form action="#" method="post" class="sign-up-form">
+            <form action="{% url 'register' %}" method="post" class="sign-up-form">
                 {% csrf_token %}
                 <h2 class="title">Регистрация</h2>
                 <div class="input-field">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="login" placeholder="Логин"/>
-                </div>
-                <div class="input-field">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Email"/>
+                    <input type="email" name="email" placeholder="Email" name="email" value="{{data.email}}"/>
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="psw" placeholder="Пароль"/>
+                    <input type="password" name="password" value="{{data.password}}" placeholder="Пароль"/>
+                </div>
+                <div class="input-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password2" value="{{data.password2}}" placeholder="Подтвердите пароль"/>
                 </div>
                 <input type="submit" class="btn" value="Регистрация"/>
                 <p class="social-text">Или войдите с помощью сервисов</p>
@@ -102,7 +102,8 @@
 </body>
 
 <script>
-    const sign_in_btn = document.querySelector("#sign-in-btn");
+
+const sign_in_btn = document.querySelector("#sign-in-btn");
 const sign_up_btn = document.querySelector("#sign-up-btn");
 const back_to_main_btn = document.querySelector("#back-to-main-btn")
 const container = document.querySelector(".container-reg-log");
@@ -116,5 +117,4 @@ sign_in_btn.addEventListener("click", () => {
 });
 
 </script>
-
 </html>

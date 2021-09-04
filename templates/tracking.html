@@ -1,33 +1,107 @@
 {% extends 'shared/base.html' %} 
+{% load static %}
 
-{% block base_content %}  
+
+{% block base_content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
 <h4 class="mb-4 text-center text-uppercase subtitle" style="padding-top: 10px;" >Местонахождение и информация по грузу</h4>
 
-
 <div  class="container">
     <div class="jumbotron"> 
-        <form  action="{% url 'search' %}" method="get">
+        <form action="{% url 'search' %}" onsubmit="event.preventDefault()" method="get">
 
             <div class="form-group col-md-12 col-sm-12">
-                <input  name="q" class="form-control" type="text" placeholder="Введите номер заказа или накладной 123456789123g">
+                <input  name="q" class="form-control" type="text" placeholder="Введите номер заказа или накладной 123456789123g" id="inp">
             </div>
             <div class="col-md-12 col-12 ">
-            <input type="submit" style="background-color: #3D3935; border-color: #3D3935;"  id="btn" class="btn btn-primary btn-lg btn-block" value="Проверить">
+            <input type="submit" style="background-color: #3D3935; border-color: #3D3935;"  id="btn" class="btn btn-primary btn-lg btn-block" value="Проверить" onclick="toSend()">
             </div>
-            <dl class="dl-horizontal text-center  pt-4 animate__animated animate__fadeInUp">
-                {% for my_object in object_list %}
-                <dd>№ заказа\накладной: {{ my_object.tracking_number }}</dd>
-                <dd >Статус груза: {{ my_object.status }}</dd>
-                <dd  >Дата доставки: {{my_object.delivery_date }}</dd>
-                <dd >Статус оплаты: {{my_object.status_pay }}</dd>
-                <dd >Направление: {{my_object.route }}</dd>
-                {% endfor %}
+            <dl class="dl-horizontal text-center pt-4 animate__animated animate__fadeInUp" 
+            id='data' style="display: none">   
+                <dd id="num"></dd>
+                <dd id="c_status" ></dd>
+                <dd id="data_status" ></dd>
+                <dd id="pay_status" ></dd>
+                <dd id="route" ></dd>
             </dl>
         </form>
     </div>
 </div>
 
+<script>
+
+const data = document.getElementById('data')
+
+const btn = document.getElementById('btn');
+const inp = document.getElementById('inp');
+
+const num = document.getElementById('num');
+const c_status = document.getElementById('c_status');
+const data_status = document.getElementById('data_status');
+const pay_status = document.getElementById('pay_status');
+const route = document.getElementById('route');
+
+function putData(data){
+    {% comment %} num.innerHTML = <div>`Номер заказа: ${data['tracking_number_client']}`</div> {% endcomment %}
+    num.innerHTML = `Номер заказа: ${data['tracking_number_client']}`
+    c_status.innerHTML = `Статус груза: ${data['status']}`
+    data_status.innerHTML = `Дата получения статуса: ${data['status_date']}`
+    route.innerHTML = `Направление: ${data['route']}`
+    pay_status.innerHTML = `Статус оплаты: ${data['status_pay']}`
+}
+
+function toSend(){
+    const struct = {
+      trak: inp.value
+    };
+    data.style.display = 'block'
+
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+    const csrftoken = getCookie('csrftoken');
+
+    async function postData(url, data) {
+        const response = await fetch(url, {
+        method: 'POST',
+        cache: 'no-cache', 
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            "X-CSRFTOKEN":  csrftoken
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer', 
+        body: JSON.stringify(data) 
+        });
+        return await response.json(); 
+    }
+    
+    postData('http://127.0.0.1:8000/api/get-track-info/', struct)
+        .then((data) => {
+
+            putData(data);
+
+        });
+
+
+
+}
+
+</script> 
 {% endblock %}
 

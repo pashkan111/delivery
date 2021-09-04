@@ -13,33 +13,35 @@ class City(models.Model):
 
 
 class Calculate(models.Model):
-    cityto = models.ForeignKey(City, on_delete=models.CASCADE, related_name='calc_cityto')
     cityfrom = models.ForeignKey(City, on_delete=models.CASCADE, related_name='calc_cityfrom')
-    # weightto = models.DecimalField(max_digits=9, decimal_places=2)
-    # weightfrom = models.DecimalField(max_digits=9, decimal_places=2)
-    # inter_terminal = models.IntegerField()
-    weightto = models.CharField(max_length=255)
-    weightfrom = models.CharField(max_length=255)
-    inter_terminal = models.CharField(max_length=255)
-    pickup = models.CharField(max_length=255)
+    cityto = models.ForeignKey(City, on_delete=models.CASCADE, related_name='calc_cityto')
+    weightfrom = models.DecimalField(max_digits=9, decimal_places=2)
+    weightto = models.DecimalField(max_digits=9, decimal_places=2)
+    inter_terminal = models.IntegerField()
+    delivery_from = models.IntegerField()
+    delivery_to = models.IntegerField()
+    convert_price = models.IntegerField()
 
     def __str__(self):
-        return f'from {self.cityfrom} to {self.cityto}'
+        return f'''Город отправления: {self.cityfrom};
+                    город доставки: {self.cityto};
+                    вес от: {self.weightfrom};
+                    вес до: {self.weightto};
+                    межтерминальная: {self.inter_terminal};
+                    доставка от: {self.delivery_from};
+                    доставка до: {self.delivery_to}
+                '''
 
 
 class Term(models.Model):
-    cityto = models.ForeignKey(City, on_delete=models.CASCADE, related_name='term_cityto')
     cityfrom = models.ForeignKey(City, on_delete=models.CASCADE, related_name='term_cityfrom')
-    term_standart_to = models.CharField(max_length=255)
-    term_standart_from = models.CharField(max_length=255)
-    term_express_to = models.CharField(max_length=255)
-    term_express_from = models.CharField(max_length=255)
-    # term_standart_to = models.IntegerField()
-    # term_standart_from = models.IntegerField()
-    # term_express_to = models.IntegerField()
-    # term_express_from = models.IntegerField()
+    cityto = models.ForeignKey(City, on_delete=models.CASCADE, related_name='term_cityto')
+    term_standart_from = models.IntegerField()
+    term_standart_to = models.IntegerField()
+    term_express_from = models.IntegerField()
+    term_express_to = models.IntegerField()
 
     def __str__(self):
-        return self.cityto
+        return f'{self.cityto}'
 
 

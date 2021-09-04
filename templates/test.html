@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<link rel="stylesheet" type="text/css" href="jquery-ui-1.10.3.custom.min.css"></style>
+<style>
+    #result {
+    border: 1px dotted #ccc;
+    padding: 3px;
+    cursor: pointer
+    }
+    #result ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    }
+    #result ul li {
+    padding: 5px 0;
+    }
+    #result ul li:hover {
+    background: #eee;
+    }
+</style>
+</head>
+<body>    
+    <form autocomplete="off">
+        <input type="text" name="q" id="autoComplete"/>
+        <div id="result"></div>
+    </form>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.6/dist/autoComplete.min.js"></script>
+
+<script>
+var search_terms = ['apple', 'apple watch', 'apple macbook', 'apple macbook pro', 'iphone', 'iphone 12'];
+
+const autoComplete = require("@tarekraafat/autocomplete.js");
+
+
+const config = {
+    placeHolder: "Search for Food...",
+    data: {
+        src: ["Sauce - Thousand Island", "Wild Boar - Tenderloin", "Goat - Whole Cut"]
+    },
+    resultItem: {
+        highlight: {
+            render: true
+        }
+    }
+}
+const autoCompleteJS = new autoComplete( config );
+</script>
+
+</html>

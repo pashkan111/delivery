@@ -2,64 +2,66 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-
-
-
-     
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" /> 
 
-{% block base_content %}  
+{% block base_content %}
 
 <h4 class="mb-4 text-center text-uppercase subtitle" style="margin-top: 55px;">Расчет и оформление заказа</h4>
 <div class="container" style="color: #3D3935;">
-    <div class="jumbotron">
-    <form action="{% url 'order' %}" method="POST" >
+  <div class="row">
+    <div class="col-md-9">
+  
+    <div class="jumbotron" style='overflow: auto;'>
+    {% comment %} <form id="form-post" action="" method="POST" > {% endcomment %}
+    <form id="form-post" action="{% url 'order' %}" method="POST" >
       {% csrf_token %}
-        <div class="row mb-3">
+        <div class="row">
+        <div style="display:none">
+          {{ form.category|as_crispy_field }} 
+        </div>
+            <div class="form-group col-md-6 col-sm-6">
+              {{ form.city_from|as_crispy_field }}         
+
+                  <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" id="addressFrom" name="inlineMaterialRadiosExample2" onclick="radioCheckFrom()" checked>
+                    <label class="form-check-label" for="addressFrom">От адреса</label>
+                  </div>
+                  
+                  <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" id="termFrom" name="inlineMaterialRadiosExample2" onclick="radioCheckFrom()">
+                    <label class="form-check-label" for="termFrom">От терминала</label>
+                  </div>
+
+                  <div id="addressYes" >
+                    {{ form.address_from|as_crispy_field }}
+                  </div>
+                  <div id="termYes" style="display: none;">
+                    {{ form.terminal_from|as_crispy_field }}
+                  </div>
+            </div>
             <div class="form-group col-md-6 col-sm-6">
               <div class="ui-widget">
               {{ form.city_to|as_crispy_field }}
             </div>
 
-               
                     <div class="form-check form-check-inline">
                    
-                        <input type="radio" class="form-check-input" id="address" name="inlineMaterialRadiosExample" onclick="radioCheck()">
-                        <label class="form-check-label" for="address">От адреса</label>
+                        <input type="radio" class="form-check-input" id="addressTo" name="inlineMaterialRadiosExample" onclick="radioCheckTo()" checked>
+                        <label class="form-check-label" for="addressTo">До адреса</label>
                       </div>
                       <div class="form-check form-check-inline">
          
-                        <input type="radio" class="form-check-input" id="term" name="inlineMaterialRadiosExample" onclick="radioCheck()">
-                        <label class="form-check-label" for="term">От терминала</label>
+                        <input type="radio" class="form-check-input" id="termTo" name="inlineMaterialRadiosExample" onclick="radioCheckTo()">
+                        <label class="form-check-label" for="termTo">До терминала</label>
                       </div>   
                       
-                      <div id="addressYes" style="display: none;">
+                      <div id="addressToYes">
                 
-                        {{ form.address_from|as_crispy_field }}
+                        {{ form.address_to|as_crispy_field }}
                       </div>
-                      <div id="termYes" style="display: none;">
-                        {{ form.terminal_from|as_crispy_field }}
+                      <div id="termToYes" style="display: none;">
+                        {{ form.terminal_to|as_crispy_field }}
                       </div>
-            </div>
-            <div class="form-group col-md-6 col-sm-6">
-              {{ form.city_from|as_crispy_field }}
-                
-
-                <div class="form-check form-check-inline">
-                    <input type="radio" class="form-check-input" id="addressTo" name="inlineMaterialRadiosExample2" onclick="radioCheckTo()">
-                    <label class="form-check-label" for="addressTo">До адреса</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input type="radio" class="form-check-input" id="termTo" name="inlineMaterialRadiosExample2" onclick="radioCheckTo()">
-                    <label class="form-check-label" for="termTo">До терминала</label>
-                  </div>
-
-                  <div id="addressToYes" style="display: none;">
-                    {{ form.address_to|as_crispy_field }}
-                  </div>
-                  <div id="termToYes" style="display: none;">
-                    {{ form.terminal_to|as_crispy_field }}
-                  </div>
             </div>
         </div>
         <div class="row mb-3">
@@ -76,44 +78,44 @@
                
             </div>
 
-            <div class="form-group col-md-6 col-sm-6">
-              {{ form.interval|as_crispy_field }}
+            <div class="form-group col-md-3 col-sm-3">
+              {{ form.interval1|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-3 col-sm-3">
+              {{ form.interval2|as_crispy_field }}
             </div>
 
             <div class="form-group col-md-12 col-sm-6">
-                <ul class="nav nav-tabs justify-content-center">
-                    <li class="nav-item">
+                <ul class="nav nav-tabs justify-content-center" id="ul-categories">
+                    <li class="nav-item" id="1place">
                       <a class="nav-link active" style="color: #007041;" data-toggle="tab" href="#onePlace">1 место</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="2place">
                       <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#serveralPlaces">Несколько мест</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="docs">
                       <a class="nav-link" style="color: #007041;" data-toggle="tab" href="#documentation">Документы</a>
                     </li>
-                  </ul>
+                </ul>
                   <div class="tab-content p-3">
                     <div class="tab-pane fade show active" id="onePlace">
                         
                             <div class="row">
-                              <div class="col-md-4 col-sm-6 ">
+                              <div class="col-md-4 col-sm-6 " id='length_one'>
                                 {{ form.length_one|as_crispy_field }}
                               </div>
-                              <div class="col-md-4 col-sm-6">
+                              <div class="col-md-4 col-sm-6" id='width_one'>
                                 {{ form.width_one|as_crispy_field }}
                               </div>
-                              <div class="col-md-4 col-sm-6">
+                              <div class="col-md-4 col-sm-6" id='height_one'>
                                 {{ form.height_one|as_crispy_field }}
                             </div>
                         
                             <div class="col-md-4 col-sm-6 ">
                               {{ form.weight_one|as_crispy_field }}
                             </div>
-                            <div class="col-md-4 col-sm-6">
+                            <div class="col-md-4 col-sm-6" id='volume_one'>
                               {{ form.volume_one|as_crispy_field }}
-                            </div>
-                            <div class="col-md-4 col-sm-6">
-                              {{ form.place_quantity|as_crispy_field }}
                             </div>
                             </div>
                          
@@ -121,31 +123,27 @@
                     <div class="tab-pane fade" id="serveralPlaces">
                        
                             <div class="row">
-                              <div class="col-md-3 col-sm-6 ">
+                              <div class="col-md-4 col-sm-8 ">
                                 {{ form.some_weight|as_crispy_field }}
                               </div>
-                              <div class="col-md-3 col-sm-6">
+                              <div class="col-md-4 col-sm-8">
                                 {{ form.some_volume|as_crispy_field }}
                               </div>
-                              <div class="col-md-3 col-sm-6">
+                              <div class="col-md-4 col-sm-8">
                                 {{ form.some_place_quantity|as_crispy_field }}
                             </div>
                         
-                            <div class="col-md-3 col-sm-6 ">
+                            <div class="col-md-4 col-sm-8 ">
                               {{ form.some_longest|as_crispy_field }}
                             </div>
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-4 col-sm-8">
                               {{ form.some_widest|as_crispy_field }}
                             </div>
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-4 col-sm-8">
                               {{ form.some_highest|as_crispy_field }}
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                              {{ form.some_hardest|as_crispy_field }}
                             </div>
                             <div class="col-md-3 col-sm-6 text-center">
                                 <br>
-                                <a href="#" class="font-weight-bold" data-toggle="tooltip" style="color: red" title="Грузовое место считается негабаритным, если вес места не менее 500 кг или одно из измерений равно или более 3 метров">(!)Негабарит</a>
                             </div>
                             </div>
                          
@@ -186,13 +184,13 @@
                   <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
                     data-parent="#accordionExample">
                     <div class="card-body">
-                        <div class="form-group col-md-6 col-sm-6">
-                          {{ form.declared_value|as_crispy_field }}
-                        </div>
+                       
                             <div class="custom-control custom-checkbox">
-                                <div class="form-group form-check" style="visibility: visible;">
+                                <div class="form-group form-check" id="ins" style="visibility: visible;" onclick="checkInsuranse()">
                                   {{ form.insurance|as_crispy_field }}
-                                    
+                                    <div class="form-group col-md-6 col-sm-6" style="display: none" id="decl_val">
+                                     {{ form.declared_value|as_crispy_field }}
+                                    </div>
                                 </div>
                                 <div class="form-group form-check" style="visibility: visible;">
                                   {{ form.return_of_accompanying_documents|as_crispy_field }}
@@ -272,7 +270,7 @@
                                     {{ form.callback_two_hour|as_crispy_field }}
                                   </div>
                                 </div>
-                                </div>
+                            </div>
                     </div>
                   </div>
                 </div>
@@ -288,37 +286,53 @@
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                       <div class="card-body">
                         <div class="custom-control custom-checkbox">
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test1()">
                               {{ form.rigid_packaging|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='1'>
+                                {{ form.rigid_packaging_amount|as_crispy_field }}      
+                              </div>
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test2()">
                               {{ form.pallet_board|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='2'>
+                                {{ form.pallet_board_amount|as_crispy_field }}
+                              </div> 
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test3()">
                               {{ form.bag|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='3'>
+                                {{ form.bag_amount|as_crispy_field }}
+                              </div>  
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test4()">
                               {{ form.cardboard_box|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='4'>
+                                {{ form.cardboard_box_amount|as_crispy_field }}
+                              </div>  
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test5()">
                               {{ form.pallet|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='5'>
+                                {{ form.pallet_amount|as_crispy_field }}
+                              </div> 
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test6()">
                               {{ form.strapping|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='6'>
+                                {{ form.strapping_amount|as_crispy_field }}
+                              </div>  
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test7()">
                               {{ form.stretch|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='7'>
+                                {{ form.stretch_amount|as_crispy_field }}
+                              </div>  
                             </div>
-                            <div class="form-group form-check" style="visibility: visible;">
+                            <div class="form-group form-check" style="visibility: visible;" onclick="test8()">
                               {{ form.air_bubble|as_crispy_field }}
-                                
+                              <div class="col-md-6 col-sm-6" style="display: none" id='8'>
+                                {{ form.air_bubble_amount|as_crispy_field }}
+                              </div>  
                             </div>
                            
                             </div>
@@ -341,15 +355,15 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <p class="font-weight-bold">Отправитель</p>
                                         <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input text-center" id="individual" name="inlineMaterialRadiosExample" onclick="radioCheckFace()">
+                                            <input type="radio" checked class="form-check-input text-center" id="individual" name="inlineMaterialRadiosExample" onclick="radioCheckFace()">
                                             <label class="form-check-label" for="individual">Физическое лицо</label>
                                           </div>
                                           <div class="form-check form-check-inline">
                                             <input type="radio" class="form-check-input" id="entity" name="inlineMaterialRadiosExample" onclick="radioCheckFace()">
                                             <label class="form-check-label" for="entity">Юридическое лицо</label>
-                                          </div>   
+                                          </div>
                                           
-                                          <div style="display: none;" id="individualYes" >
+                                          <div  id="individualYes" >
                                             {{ form.fio_individual|as_crispy_field }}
                                             {{ form.documents|as_crispy_field }}
                                             {{ form.passport_individual|as_crispy_field }}
@@ -357,7 +371,7 @@
                                             {{ form.phone_individual|as_crispy_field }}
                                           </div>
 
-                                          <div style="display: none;" id="entityYes" >
+                                          <div style="display: none" id="entityYes" >
                                             {{ form.fio_entity|as_crispy_field }}
                                             {{ form.inn_entity|as_crispy_field }}
                                             {{ form.contact_person_entity|as_crispy_field }}
@@ -371,7 +385,7 @@
                                    
                     
                                     <div class="form-check form-check-inline">
-                                        <input type="radio" class="form-check-input" id="individual1" name="inlineMaterialRadiosExample2" onclick="radioCheckFaceTo()">
+                                        <input type="radio" checked class="form-check-input" id="individual1" name="inlineMaterialRadiosExample2" onclick="radioCheckFaceTo()">
                                         <label class="form-check-label" for="individual1">Физическое лицо</label>
                                       </div>
                                       <div class="form-check form-check-inline">
@@ -379,21 +393,21 @@
                                         <label class="form-check-label" for="entity1">Юридическое лицо</label>
                                       </div>
 
-                                      <div style="display: none;" id="individualYes1">
-                                        {{ form.fio_individual|as_crispy_field }}
-                                        {{ form.documents|as_crispy_field }}
-                                        {{ form.passport_individual|as_crispy_field }}
-                                        {{ form.email_individual|as_crispy_field }}
-                                        {{ form.phone_individual|as_crispy_field }}
+                                      <div id="individualYes1">
+                                        {{ form.fio_individual_p|as_crispy_field }}
+                                        {{ form.documents_p|as_crispy_field }}
+                                        {{ form.passport_individual_p|as_crispy_field }}
+                                        {{ form.email_individual_p|as_crispy_field }}
+                                        {{ form.phone_individual_p|as_crispy_field }}
                                       </div>
 
-                                      <div style="display: none;" id="entityYes1" >
-                                        {{ form.fio_entity|as_crispy_field }}
-                                        {{ form.inn_entity|as_crispy_field }}
-                                        {{ form.contact_person_entity|as_crispy_field }}
-                                        {{ form.email_entity|as_crispy_field }}
-                                        {{ form.phone_entity|as_crispy_field }}
-                                        
+                                      <div style="display: none" id="entityYes1" >
+                                        {{ form.fio_entity_p|as_crispy_field }}
+                                        {{ form.inn_entity_p|as_crispy_field }}
+                                        {{ form.contact_person_entity_p|as_crispy_field }}
+                                        {{ form.email_entity_p|as_crispy_field }}
+                                        {{ form.phone_entity_p|as_crispy_field }}
+
                                       </div>
 
                                 </div>
@@ -453,67 +467,1004 @@
               </div>
             
             <!--Button-->
-              <button type="submit" style="background-color: #3D3935; border-color: #3D3935;" id="btn" class="btn btn-primary btn-lg btn-block">Оформить заказ</button>
+              <button id="send-button" type="submit" style="background-color: #3D3935; border-color: #3D3935;" id="btn" class="btn btn-primary btn-lg btn-block">Оформить заказ</button>
             
         </div>
     </form>
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">Расчет</h5>
-        <p class="card-text">Забор груза &nbsp;&nbsp;&nbsp;&nbsp;<strong id="cargo"></strong></p>
-        <p class="card-text" id="inter">Межтерминальная перевозка </p>
-        <p class="card-text">Страхование </p>
-          <p class="card-text" style="display: none">Возврат сопроводительных документов </p>
-          <p class="card-text" style="display: none">Отправка сопроводительных документов </p>
-          <p class="card-text" style="display: none">Погрузо-разгрузочные работы у отправителя </p>
-          <p class="card-text" style="display: none">Погрузо-разгрузочные работы у получателя </p>
-          <p class="card-text" style="display: none">Коммиссия наложенного платежа </p>
-          <p class="card-text" style="display: none">Подтверждение доставки </p>
-        <h5 class="card-title">Сроки</h5>
-        <p class="card-text">Стандарт &nbsp;&nbsp;&nbsp;&nbsp;<strong>3 дня</strong></p>
-        <p class="card-text">Экспресс &nbsp;&nbsp;&nbsp;&nbsp;<strong>2 дня</strong></p>
-          <h5 class="card-title">Общая стоимость</h5>
-      </div>
     </div>
+    {% comment %} </div> {% endcomment %}
+
+    <div class="col-md-3" id="check-element">
+
+        <div class="card" style="width: 17rem; color: #292323; 
+    position: sticky; top: 0">
+          <div class="card-body">
+            <h5 class="card-title" style="text-align: center">Расчет</h5>
+            <div style="border-bottom: 1px solid; height: 25px">
+              <p class="card-text" style="display:inline-block; margin-right:49px" id="cargo">Забор груза:</p>
+              <p class="card-text" style="display:inline-block;" ><b id="address-price"></b></p>
+            </div>
+
+            <div style="border-bottom: 1px solid; height: 25px; margin-top:2px">
+              <p class="card-text" style="display:inline-block; margin-right:27px" id="cargo">Доставка груза:</p>
+              <p class="card-text" style="display:inline-block;" ><b id="to-address-price"></b></p>
+            </div> 
+
+            <div style="border-bottom: 1px solid; height: 43px; margin-top:2px; margin-bottom:5px">
+              <div style="display:inline-block; width: 140px">
+                <p class="card-text" style="display:inline-block; margin-right:5px;line-height:20px" id="cargo">Межтерминальная перевозка:</p>
+              </div>
+              <div style="display:inline-block">
+                <p class="card-text" style="display:inline; margin-right:1px" ><b id="inter_terminal_price"></b></p>
+              </div>
+            </div>
+ 
+            <h5 style="margin-bottom: 4px ;" class="card-title">Дополнительные услуги</h5>
+            <div id='dops'>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Страховка</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Возврат сопроводительных документов</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Отправка сопроводительных документов</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Погрузо-разгрузочные работы у отправителя</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Погрузо-разгрузочные работы у получателя</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Пропуск на территорию отправителя</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Запись на отгрузку</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Платный въезд на территорию отправителя</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Внутренний номер отгрузки</p>
+              {% comment %} <p class="card-text" style="display: none; margin: 0 auto; font-size: 13px">Наложенный платеж</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 13px">Заезд на второй адрес</p> {% endcomment %}
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Подтверждение доставки</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Доверенность</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Предварительный звонок</p>
+            </div>
+            <h5 style="margin-top: 10px; margin-bottom: 4px" class="card-title">Упаковка груза</h5>
+            <div id='packings'>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Жесткая упаковка</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Паллетный борт</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Мешок</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Картонная коробка</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Палет</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Стреппинг</p>
+              <p class="card-text" style="display: none; margin: 0 auto; font-size: 14px">Стрейч - пленка</p>
+              <p class="card-text" style="display:none; margin: 0 auto; font-size: 14px">Воздушно - пузырьковая пленка</p>
+            </div>
+            <h5 class="card-title" style="margin-top: 10px; margin-bottom: 5px" >Сроки</h5>
+            <p class="card-text" style="margin: 0 auto;">Стандарт: <strong style="margin-left: 40px" id="standart"></strong></p>
+            <p class="card-text" style="margin: 0 auto;">Экспресс: <strong style="margin-left: 40px" id="express"></strong></p>
+              <h5 class="card-title" style="margin-top: 10px; margin-bottom: 5px" >Общая стоимость</h5>
+              <div style="text-align: center"><h3 id="final_price" style=" display:inline-block">0</h3><h3 id="final_price" style=" display: inline-block"> &nbspруб</h3></div>
+          </div>
+        </div>
+
+      </div>
+      
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
+<script type="module" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
 <script type="text/javascript">
-    let cityto = document.querySelector('#id_city_to'),
-        cityfrom = document.querySelector('#id_city_from'),
-        weightto = document.querySelector('#id_weight_one'),
-        weightfrom = document.querySelector('#id_volume_one');
 
-    $.ajax({
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        processData: false,
-        data: JSON.stringify({'cityto': cityto, 'cityfrom': cityfrom, 'weightto': weightto, 'weightfrom': weightfrom}),
+//КОНСТАНТЫ
 
-    });
+const price = document.getElementById('final_price')
 
-    let my_data = '{{ my_data }}',
-        cargo = document.querySelector('#cargo'),
-        weightto_a = document.querySelector('#id_weight_one'),
-        weightfrom_a = document.querySelector('#id_volume_one');
+const cityto = document.querySelector('#id_city_to')
+const cityfrom = document.querySelector('#id_city_from')
+const weightto = document.querySelector('#id_weight_one')
+const weightfrom = document.querySelector('#id_volume_one');
+const datecargo = document.querySelector('#id_date_cargo');
+const naturecargo = document.querySelector('#id_nature_cargo');
 
-        weightto_a.oninput = function () {
-            cargo.innerHTML = my_data
-        };
 
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
+const interval1 = document.getElementById('id_interval1')
+const interval2 = document.getElementById('id_interval2')
 
-    function radioCheck() {
-        if (document.getElementById('address').checked) {
+
+const declaredValue = document.getElementById('id_declared_value')
+
+const insurance = document.getElementById('id_insurance')
+const returnOfAccompanyingDocuments = document.getElementById('id_return_of_accompanying_documents')
+const sendingAccompanyingDocuments = document.getElementById('id_sending_accompanying_documents')
+const loadingAndUnloadingSender = document.getElementById('id_loading_and_unloading_sender')
+
+const floorSender = document.getElementById('id_floor_sender')
+const carrySender = document.getElementById('id_carry_sender')
+
+const loadingAndUnloadingRecipient = document.getElementById('id_loading_and_unloading_recipient')
+
+const floorRecipient = document.getElementById('id_floor_recipient')
+const carryRecipient = document.getElementById('id_carry_recipient')
+
+const passSenderTerritory = document.getElementById('id_pass_sender_territory')
+const registrationForShipment = document.getElementById('id_registration_for_shipment')
+const paidEntrySenderTerritory = document.getElementById('id_paid_entry_sender_territory')
+
+const id_sum = document.getElementById('id_sum')
+const reimbursementMethod = document.getElementById('id_reimbursement_method')
+
+const internalShipmentNumber = document.getElementById('id_internal_shipment_number')
+const deliveryConfirmation = document.getElementById('id_delivery_confirmation')
+const powerOfAttorney = document.getElementById('id_power_of_attorney')
+const preCall = document.getElementById('id_pre_call')
+
+
+
+const rigidPackaging = document.getElementById('id_rigid_packaging')
+const palletBoard = document.getElementById('id_pallet_board')
+const bag = document.getElementById('id_bag')
+const cardboardBox = document.getElementById('id_cardboard_box')
+const pallet = document.getElementById('id_pallet')
+const strapping = document.getElementById('id_strapping')
+const stretch = document.getElementById('id_stretch')
+const airBubble = document.getElementById('id_air_bubble')
+
+
+const individual = document.getElementById('individual')
+const entity = document.getElementById('entity')
+
+const fioIndividual = document.getElementById('id_fio_individual')
+const passportIndividual = document.getElementById('id_passport_individual')
+const emailIndividual = document.getElementById('email_individual')
+const phoneIndividual = document.getElementById('id_phone_individual')
+
+const fioIntity = document.getElementById('id_fio_entity')
+const innEntity = document.getElementById('id_inn_entity')
+const contactPersonEntity = document.getElementById('id_contact_person_entity')
+const emailEntity = document.getElementById('id_email_entity')
+const phoneEntity = document.getElementById('id_phone_entity')
+
+
+const individual1 = document.getElementById('individual1')
+const entity1 = document.getElementById('entity1')
+
+const fioIndividual1 = document.getElementById('id_fio_individual_p')
+const passportIndividual1 = document.getElementById('id_passport_individual_p')
+const emailIndividual1 = document.getElementById('email_individual_p')
+const phoneIndividual1 = document.getElementById('id_phone_individual_p')
+
+const fioIntity1 = document.getElementById('id_fio_entity_p')
+const innEntity1 = document.getElementById('id_inn_entity_p')
+const contactPersonEntity1 = document.getElementById('id_contact_person_entity_p')
+const emailEntity1 = document.getElementById('id_email_entity_p')
+const phoneEntity1 = document.getElementById('id_phone_entity_p')
+
+let cities = []
+
+const errorStyles = "border-color:#f71616; box-shadow: 0 0 7px #d45252;"
+const inputStyles = "border:1px solid blue; box-shadow:0 0 5px blue;"
+// Упаковка груза
+
+
+const lstOfPackings = [
+  rigidPackaging,
+  palletBoard,
+  bag,
+  cardboardBox,
+  pallet,
+  strapping,
+  stretch,
+  airBubble,
+]
+
+const packings = Array.from(document.getElementById('packings').children)
+
+const packingsPrices = [
+  600,
+  600,
+  80,
+  100,
+  160,
+  100,
+  150,
+  150,
+]
+
+const rigidPackagingAmount = document.getElementById('id_rigid_packaging_amount')
+const palletBoardAmount = document.getElementById('id_pallet_board_amount')
+const bagAmount = document.getElementById('id_bag_amount')
+const cardboardboxAmount = document.getElementById('id_cardboard_box_amount')
+const palletAmount = document.getElementById('id_pallet_amount')
+const strappingAmount = document.getElementById('id_strapping_amount')
+const stretchAmount = document.getElementById('id_stretch_amount')
+const airbubbleAmount = document.getElementById('id_air_bubble_amount')
+
+
+const counts = [
+  rigidPackagingAmount,
+  palletBoardAmount,
+  bagAmount,
+  cardboardboxAmount,
+  palletAmount,
+  strappingAmount,
+  stretchAmount,
+  airbubbleAmount
+]
+
+
+let inpAmount = 0
+let PriceNow = [
+  0, 0, 0, 0, 0, 0, 0, 0
+]
+
+  counts.forEach((el, i) => {
+    el.addEventListener('input', (e) => {
+      let value = e.target.value
+
+      if (+value > inpAmount || !value){
+        const cotalPrice = value * packingsPrices[i]
+        let current = +price.innerText
+        const priceToPut = current + cotalPrice - PriceNow[i]
+        price.innerText = Math.round(priceToPut)
+        PriceNow[i] = Math.round(cotalPrice)
+      }
+    })
+  })
+
+
+lstOfPackings.forEach((el, i) => {
+  el.addEventListener('change', () => {
+    if(el.checked){
+      const pr = Number(counts[i].value)
+      const priceToPut = pr * packingsPrices[i]
+      price.innerText = priceToPut + +price.innerText
+      PriceNow[i] = priceToPut
+      packings[i].style.display = 'block'
+    } else{
+      const newPrice = +price.innerText - PriceNow[i]
+      price.innerText = newPrice
+      packings[i].style.display = 'none'
+    }
+  })
+})
+
+
+
+function test1(){
+  const el = document.getElementById('1')
+  if(document.getElementById('id_rigid_packaging').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test2(){
+  const el = document.getElementById('2')
+  if(document.getElementById('id_pallet_board').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test3(){
+  const el = document.getElementById('3')
+  if(document.getElementById('id_bag').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test4(){
+  const el = document.getElementById('4')
+  if(document.getElementById('id_cardboard_box').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test5(){
+  const el = document.getElementById('5')
+  if(document.getElementById('id_pallet').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test6(){
+  const el = document.getElementById('6')
+  if(document.getElementById('id_strapping').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test7(){
+  const el = document.getElementById('7')
+  if(document.getElementById('id_stretch').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+function test8(){
+  const el = document.getElementById('8')
+  if(document.getElementById('id_air_bubble').checked){
+  el.style.display = 'block'
+  } else{
+    el.style.display = 'none'
+  }
+}
+
+//Упаковка груза конец
+
+
+const lstOfDopServices = [
+  insurance,
+  returnOfAccompanyingDocuments,
+  sendingAccompanyingDocuments,
+  loadingAndUnloadingSender,
+  loadingAndUnloadingRecipient,
+  passSenderTerritory,
+  registrationForShipment,
+  paidEntrySenderTerritory,
+  internalShipmentNumber,
+  deliveryConfirmation,
+  powerOfAttorney,
+  preCall,
+]
+
+const dops = Array.from(document.getElementById('dops').children)
+
+//INSURANCE
+let declaredCost = 0
+
+function countPrice(num, el){
+      if(el.checked){
+        price.innerText = +price.innerText + num
+      }else{
+        price.innerText = +price.innerText - num
+      }
+  }
+
+function countProc(num){
+    declaredCost = +num * 0.25 / 100
+}
+
+//INSURANCE
+
+
+function checkedDops(el, i){
+  if (el.checked){
+    dops[i].style.display = 'block'
+  }else{
+    dops[i].style.display = 'none'
+  }
+}
+
+
+let weight = weightto.value
+let currentFloorS = 0
+let currentFloorR = 0
+    
+  weightto.addEventListener('input', (e) => {
+      weight = e.target.value
+  })
+
+
+lstOfDopServices.forEach((el, i) => {
+  el.addEventListener('change', () => {
+
+    if (el == returnOfAccompanyingDocuments) 
+    {
+      countPrice(250, el)
+      checkedDops(el, i)
+    }
+
+    else if (el == sendingAccompanyingDocuments)
+    {
+      countPrice(50, el)
+      checkedDops(el, i)
+    }
+
+    else if (el == deliveryConfirmation)
+    {
+      countPrice(125, el)
+      checkedDops(el, i)
+    }
+
+    else if (el == insurance)
+    {
+      let checked = false
+      checkedDops(el, i)
+      if (el.checked){
+        //let currentPrice = +price.innerText
+        if (!checked){
+          price.innerText = +price.innerText + 50
+        }        
+        checked = true
+      }else{
+          declaredValue.value = 0
+          declaredValue.style.cssText = inputStyles
+          price.innerText = +price.innerText - 50
+      }
+    }
+
+    else if (el == loadingAndUnloadingSender)
+    {
+      checkedDops(el, i)
+      if (el.checked){
+        const priceToCount = checkWeight(weight)
+        floorSender.addEventListener('input', (e) => {
+          const fl  = +e.target.value
+          let currentPrice = +price.innerText
+          if (fl >= currentFloorS){
+            const myPrice = checkFloor(fl, priceToCount)
+            console.log(myPrice)
+            price.innerText = currentPrice + myPrice - checkFloor(currentFloorS, priceToCount)
+            currentFloorS = fl
+          }else{
+            const Pricewas = checkFloor(currentFloorS, priceToCount)
+            const Pricenow = checkFloor(fl, priceToCount)
+            price.innerText = currentPrice - Pricewas + Pricenow
+            currentFloorS = fl            
+          }
+        })
+      }
+    }
+
+    else if (el == loadingAndUnloadingRecipient)
+    {
+      checkedDops(el, i)
+      if (el.checked){
+        const priceToCount = checkWeight(weight)
+        floorRecipient.addEventListener('input', (e) => {
+
+          const fl  = +e.target.value
+          let currentPrice = +price.innerText
+          if (fl >= currentFloorR){
+            const myPrice = checkFloor(fl, priceToCount)
+            price.innerText = currentPrice + myPrice
+            currentFloorR = fl
+          }else{
+            let currentPrice = +price.innerText
+            const Pricewas = checkFloor(currentFloorR, priceToCount)
+            const Pricenow = checkFloor(fl, priceToCount)
+            price.innerText = currentPrice - Pricewas + Pricenow
+            currentFloorR = fl            
+          }
+        })
+      }
+    }
+
+    else if(el == passSenderTerritory)
+    {
+      checkedDops(el, i)
+    }
+
+
+    else if(el == registrationForShipment)
+    {
+      checkedDops(el, i)
+    }
+
+
+    else if(el == paidEntrySenderTerritory)
+    {
+      checkedDops(el, i)
+    }
+
+
+    else if(el == powerOfAttorney)
+    {
+      checkedDops(el, i)
+    }
+
+
+    else if(el == preCall)
+    {
+      checkedDops(el, i)
+    }
+ 
+  })
+})
+
+loadingAndUnloadingRecipient
+floorRecipient
+
+function checkWeight(value){
+  if(value<15){
+    return 0
+  }else if(value>15 && value<=50){
+    return 300
+  }else if(value>50 && value<=100){
+    return 400
+  }else if(value>100 && value<=250){
+    return 900
+  }else if(value>250 && value<=300){
+    return 1100
+  }else if(value>300 && value<=500){
+    return 1600
+  }else{
+    return false
+  }
+}
+
+
+function checkFloor(floor, price){
+  if(floor>=0){
+    const proc = price*20/100*floor
+    return proc
+  } else{
+    return price
+  }
+}
+
+function checkInputFloor(newValue, currentValue){
+    if(newValue>currentValue){
+      let currentPrice = +price.innerText
+      currentPrice += declaredCost
+      price.innerText = currentPrice
+      proc = input
+  }else{
+      let currentPrice = +price.innerText
+      currentPrice -= declaredCost
+      countProc(input)
+      currentPrice += declaredCost
+      price.innerText = currentPrice
+      proc = input
+    }
+}
+
+
+function checkInput(newValue, currentValue){
+    if(newValue.length>currentValue.length){
+      let currentPrice = +price.innerText
+      currentPrice += declaredCost
+      price.innerText = currentPrice
+      proc = input
+  }else{
+      let currentPrice = +price.innerText
+      currentPrice -= declaredCost
+      countProc(input)
+      currentPrice += declaredCost
+      price.innerText = currentPrice
+      proc = input
+    }
+}
+
+
+    window.onload = function(e)
+{
+
+    fetch('http://127.0.0.1:8000/api/get-cities')
+      .then((response) => {
+        return response.json();
+      }).then(function(data){
+        data.map(i => {
+          cities.push(i.name)
+        })
+      })
+
+      autocomplete(cityto, cities);
+      autocomplete(cityfrom, cities); 
+
+      listOfInputs = document.querySelectorAll('input')
+      listOfSelects = document.querySelectorAll('select')
+  
+
+    for(let i=0; i<3; i++){
+      interval2[i].setAttribute("disabled", "disabled")
+    }
+}
+
+
+const len = document.querySelector('#id_length_one')
+const wid = document.querySelector('#id_width_one')
+const hei = document.querySelector('#id_height_one')
+
+
+len.addEventListener('input', (e) => {
+    val = event.target.value
+    volume = val*wid.value*hei.value
+    document.getElementById('id_volume_one').value=volume
+  })
+
+wid.addEventListener('input', (e) => {
+    val = event.target.value
+    volume = val*len.value*hei.value
+    document.getElementById('id_volume_one').value=volume
+  })
+
+hei.addEventListener('input', (e) => {
+    val = event.target.value
+    volume = val*len.value*wid.value
+    document.getElementById('id_volume_one').value=volume
+  })
+
+
+  interval1.addEventListener('change', (e) => {
+    const index = e.target.selectedIndex
+    for(let i=0; i<interval2.length; i++){
+      interval2[i].removeAttribute("disabled", "disabled")
+      interval2.value = interval2[i].value
+    }
+    for(let i=0; i<index; i++){
+      interval2[i].setAttribute("disabled", "disabled")
+    }
+})
+
+interval2.addEventListener('change', (e) => {
+    const index2 = e.target.selectedIndex
+    const index1 = interval1.selectedIndex
+    coef = findPriceByTime(index1, index2)
+    changePriceByTime(coef)
+})
+
+  function findPriceByTime(index1, index2){
+    const value = index2-index1
+    if (value >= 3 && value <= 5){
+      return 1.5
+    } else if (value >= 1 && value <= 3){
+      return 2
+    } else if (value == 0){
+      return 2.2
+    } else if ([0, 1, 2].indexOf(index1) != -1 || [12, 13, 14, 15, 16, 17].indexOf(index1) != -1 ){
+      return 2
+    } else{
+      return 1
+    }
+  }
+
+
+let trigger = 1
+let timePrice = 1
+
+function makePrice(value){
+  let currentPrice = Number(price.innerText)
+  const newP = +value + currentPrice
+  price.innerText = newP
+}
+
+
+function changePriceByTime(coef){
+  if (trigger != 1){
+    const newPrice = trigger * coef
+    let currentPrice = Number(price.innerText)
+    const newP = currentPrice - timePrice + newPrice
+    price.innerText = newP
+    timePrice = newPrice
+  }
+}
+
+    function defineTime(time){
+      if(time==1){
+        return 'день'
+      }else if(time==2||time==3||time==4){
+        return 'дня'
+      }else if(time>4){
+        return 'дней'
+    }
+  }
+
+  function checkTime(time1, time2){
+    if (time1 == time2){
+      return true
+    } else{
+      return false
+    }
+  }
+
+  function makeText(time1, time2){
+    const check = checkTime(time1, time2) 
+    if (!check){
+      return `от ${time1} до ${time2} дней`
+    } else{
+      define = defineTime(Number(time1))
+      return `${time1} ${define}`
+    }
+}
+
+
+
+function putDataIntoExpress(data){
+  const standart = document.getElementById("standart"),
+        express = document.getElementById("express")
+  const typSt = makeText(data['times']["term_standart_from"], data['times']["term_standart_to"])
+  const typEx = makeText(data['times']["term_express_from"], data['times']["term_express_to"])
+        standart.innerText = typSt
+        express.innerText = typEx
+}
+
+
+function insertData(data){
+  putDataIntoExpress(data)
+  if(trigger == 1){
+    standartPrice = +data['price_standart']
+    makePrice(+data['price_standart'])
+    trigger = +data['price_standart']
+
+  } else{
+    let currentPrice = +price.innerText
+    currentPrice = currentPrice - +trigger
+    currentPrice += +data['price_standart']
+    price.innerText = currentPrice
+    trigger = data['price_standart']
+  }
+
+  const interTerminalPrice = document.getElementById('inter_terminal_price').innerHTML = `${data['inter_terminal']} руб`
+  const addressPrice = document.getElementById('address-price').innerHTML = `${data['price_from_address']==false?0:data['price_from_address']} руб`
+  const ToaddressPrice = document.getElementById('to-address-price').innerHTML = `${data['price_to_address']==false?0:data['price_to_address']} руб`
+}
+
+  const cityTo = document.getElementById('id_city_to')
+  const cityFrom = document.getElementById('id_city_from')
+  const addressFrom = document.getElementById('addressFrom')
+  const addressTo = document.getElementById('addressTo')
+  const termFrom = document.getElementById('termFrom')
+  const termTo = document.getElementById('termTo')
+
+  const lstOfRadios = [
+      addressFrom,
+      addressTo,
+      termFrom,
+      termTo,
+    ]
+
+
+function funcAwait(type){
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve()
+          }, 300)
+    })
+}
+
+    
+  weightto.addEventListener('input', async function(e) 
+      {
+        if(cityTo.value && cityFrom.value){
+          postDataToServer(lstOfRadios) 
+        }
+      })
+
+
+
+lstOfRadios.forEach((el, i) => 
+  {
+    el.addEventListener('change', () =>
+      {
+        postDataToServer(lstOfRadios)
+      })
+  })
+
+
+function validateCity(city){
+  if (cities.indexOf(city.value) == -1 && city.value != ''){
+      city.style.cssText = errorStyles
+      return false
+    } else{
+      city.style.cssText = 'none'
+      return true
+    }
+}
+
+function validateField(field){
+  if (field.value == ''){
+    field.style.cssText = errorStyles
+    return false
+  } else{
+      field.style.cssText = 'none'
+      return true
+  }
+}
+
+
+function checkAllRequiredFields(field){
+  if (field.value){
+    return true
+  } else{
+    return false
+  }
+}
+
+
+function unlockSendButton(condition){
+    if (condition){
+      document.getElementById("send-button").removeAttribute('disabled')
+    }   
+}
+
+  function postDataToServer(lstOfRadios)
+    {
+        resTo = validateCity(cityTo)
+        resFrom = validateCity(cityFrom)
+        if(resTo && resFrom)
+          {
+              data = {
+                cityfrom: cityFrom.value,
+                cityto: cityTo.value,
+                delivery_from: addressFrom.checked,
+                delivery_to: addressTo.checked,
+                weight: weightto.value? weightto.value : 0,
+                volume: weightfrom.value
+            }
+            postData(url='http://127.0.0.1:8000/api/post-calc', data)
+            .then((data) => 
+              {
+                console.log(data)
+                data = JSON.parse(data)
+                ins = insertData(data)
+              });
+          } 
+    }
+
+//Валидаторы ------------------------------------------------
+
+
+const compulsoryFields = [
+  cityFrom, cityTo, datecargo, naturecargo
+]
+
+
+compulsoryFields.forEach((el, i) => {
+  if (el == cityFrom || el == cityTo){
+    el.addEventListener('change', async function(){
+        if(el == cityFrom){
+          await funcAwait('from')
+          postDataToServer(lstOfRadios)
+
+        } else if(el == cityTo){
+
+          await funcAwait('to')
+          postDataToServer(lstOfRadios)
+        }
+    })
+
+  }else{
+    el.addEventListener('change', () => {
+      const valid = validateField(el)
+      unlockSendButton(valid)
+    })
+  }
+})
+
+
+
+
+class Validator
+{
+  {% comment %} constructor(
+    cityFrom, cityTo, datecargo, naturecargo, arrOfLengthParams 
+    ){
+    this.cityFrom = cityFrom
+    this.cityTo = cityTo
+    this.datecargo = datecargo
+    this.naturecargo = naturecargo
+    this.arrOfLengthParams = arrOfLengthParams
+  } {% endcomment %}
+
+
+  async validateCity(city)
+  {
+    if(city == cityFrom){
+        await funcAwait('from')
+        postDataToServer(lstOfRadios)
+
+    } else if(city == cityTo){
+        await funcAwait('to')
+        postDataToServer(lstOfRadios)
+    }
+  }
+
+  validateDate()
+  {
+    if (datecargo.value){
+      return true
+    } else {
+      return false 
+    }
+  }
+
+  validateNaturecargo()
+  {
+    if (naturecargo.value){
+      return true
+    } else {
+      return false 
+    }
+  }
+
+  pushElemIntoArr(arr)
+  {
+    const newArr = []
+    arr.forEach((el) => {
+        if (!el){
+          nawArr.push(el.getAttribute('id'))
+        }
+    })
+    return newArr
+  }
+
+  validateLengthParams(arrOfLengthParams)
+  {
+    const objLengthParams = this.pushElemIntoArr(arrOfLengthParams)
+    return objLengthParams
+  }
+
+  validateWeightParams(arrOfWeightParams)
+  {
+    const objWeightParams = this.pushElemIntoArr(arrOfWeightParams)
+    return objWeightParams
+  }
+
+  validateSender(arrOfSenderParams_i, arrOfSenderParams_e)
+  {
+    if (individual.checked){
+      const objSenderParams_i = this.pushElemIntoArr(arrOfSenderParams_i)
+      //if (!fioIndividual || !passportIndividual || !emailIndividual || !phoneIndividual)
+      return objSenderParams
+    } else if (entity.checked){
+//fioIntity, innEntity, contactPersonEntity, emailEntity, phoneEntity
+      const objSenderParams_e = this.pushElemIntoArr(arrOfSenderParams_e)
+      return objSenderParams_e
+    }
+  }
+
+  validateRecipient(arrOfRecipientParams_i, arrOfRecipientParams_e)
+  {
+    if (individual.checked){
+      const objRecipientParams_i = this.pushElemIntoArr(arrOfRecipientParams_i)
+      //if (!fioIndividual || !passportIndividual || !emailIndividual || !phoneIndividual)
+      return objRecipientParams
+    } else if (entity.checked){
+//fioIntity, innEntity, contactPersonEntity, emailEntity, phoneEntity
+      const objRecipientParams_e = this.pushElemIntoArr(arrOfRecipientParams_e)
+      return objRecipientParams_e
+    }
+  }
+
+  
+
+}
+
+
+//Валидаторы ------------------------------------------------
+
+
+document.getElementById("form-post").addEventListener('submit', (e) => {
+    e.preventDefault()
+    validator = new Validator()
+    validator.validateCity(cityTo)
+    validator.validateCity(cityFrom)
+    console.log(validator.validateDate())
+
+})
+
+
+
+const place1 = document.getElementById('1place')
+const place2 = document.getElementById('2place')
+const docs = document.getElementById('docs')
+const category = document.getElementById('id_category')
+
+
+const categories = [
+  place1, place2, docs
+]
+
+
+categories.forEach((el) => {
+    el.addEventListener('click', (e) => {
+    category.innerText = el.id
+  })
+})
+    
+//Переключение кнопок
+
+    function radioCheckFrom() {
+        if (document.getElementById('addressFrom').checked) {
             document.getElementById('addressYes').style.display = 'block';
         }
         else document.getElementById('addressYes').style.display = 'none';
 
-        if (document.getElementById('term').checked) {
+        if (document.getElementById('termFrom').checked) {
             document.getElementById('termYes').style.display = 'block';
         }
         else document.getElementById('termYes').style.display = 'none';
@@ -544,10 +1495,16 @@
         else document.getElementById('entityYes').style.display = 'none';
     }
 
+document.getElementById('div_id_fio_individual').style.marginTop = '10px';
+document.getElementById('div_id_fio_entity').style.marginTop = '10px';
+document.getElementById('div_id_fio_individual_p').style.marginTop = '10px';
+document.getElementById('div_id_fio_entity_p').style.marginTop = '10px';
+document.getElementById('id_sender_payer').checked = true;
+document.getElementById('id_recipient_customer').checked = true;
+
     function radioCheckFaceTo() {
         if (document.getElementById('individual1').checked) {
             document.getElementById('individualYes1').style.display = 'block';
-
         }
         else document.getElementById('individualYes1').style.display = 'none';
 
@@ -555,9 +1512,8 @@
             document.getElementById('entityYes1').style.display = 'block';
         }
         else document.getElementById('entityYes1').style.display = 'none';
-
-
     }
+
 
     function check(){
       if (document.getElementById('thirdP').checked) {
@@ -571,54 +1527,80 @@
       else document.getElementById('thirdP1Yes').style.display = 'none';
     }
 
+
     function checkPRR() {
         if (document.getElementById('id_loading_and_unloading_sender').checked) {
             document.getElementById('prrYes').style.display = 'block';
         }
         else document.getElementById('prrYes').style.display = 'none';
     }
+
+
     function checkPRR_r() {
         if (document.getElementById('id_loading_and_unloading_recipient').checked) {
             document.getElementById('prr1Yes').style.display = 'block';
         }
         else document.getElementById('prr1Yes').style.display = 'none';
     }
+
+
     function checkPass() {
         if (document.getElementById('id_pass_sender_territory').checked) {
             document.getElementById('pass').style.display = 'block';
         }
         else document.getElementById('pass').style.display = 'none';
     }
+
+    
     function checkPaid() {
         if (document.getElementById('id_paid_entry_sender_territory').checked) {
             document.getElementById('paid').style.display = 'block';
         }
         else document.getElementById('paid').style.display = 'none';
     }
+    
+    function checkInsuranse() {
+        console.log('checked')
+        if (document.getElementById('id_insurance').checked) {
+            document.getElementById('decl_val').style.display = 'block';
+        }
+        else document.getElementById('decl_val').style.display = 'none';
+    }
+
+
     function checkInternal() {
+        console.log('checked')
         if (document.getElementById('id_internal_shipment_number').checked) {
             document.getElementById('internal').style.display = 'block';
         }
         else document.getElementById('internal').style.display = 'none';
     }
+
+
     function checkCOD() {
         if (document.getElementById('id_cod').checked) {
             document.getElementById('cod').style.display = 'block';
         }
         else document.getElementById('cod').style.display = 'none';
     }
+
+
     function checkSecond() {
         if (document.getElementById('id_second_address').checked) {
             document.getElementById('second').style.display = 'block';
         }
         else document.getElementById('second').style.display = 'none';
     }
+
+
     function checkPower() {
         if (document.getElementById('id_power_of_attorney').checked) {
             document.getElementById('power').style.display = 'block';
         }
         else document.getElementById('power').style.display = 'none';
     }
+
+
     function checkCall() {
         if (document.getElementById('id_pre_call').checked) {
             document.getElementById('call').style.display = 'block';
@@ -626,16 +1608,136 @@
         else document.getElementById('call').style.display = 'none';
     }
 
+
     id_declared_value.oninput = function () {
        document.getElementById('id_insurance').checked = true;
     }
+
 
     $('input.as').on('change', function () {
         $('input.as').not(this).prop('checked', false);
     });
 
+
     $('input.as1').on('change', function () {
         $('input.as1').not(this).prop('checked', false);
     });
+
+
+
+//Автозаполнение
+//_________________________
+
+    function autocomplete(inp, arr) {
+      inp.addEventListener("input", function(e) {
+        let a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) {
+          return false;
+        } 
+        currentFocus = -1;
+        a = document.createElement("DIV");
+
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            b = document.createElement("DIV");
+            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+            b.innerHTML += arr[i].substr(val.length);
+            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function(e) {
+                inp.value = this.getElementsByTagName("input")[0].value;
+                closeAllLists();
+            });
+            a.appendChild(b);
+          }
+        }
+    });
+    
+        inp.addEventListener("keydown", function(e) {
+          let x = document.getElementById(this.id + "autocomplete-list");
+          if (x) x = x.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+          } else if (e.keyCode == 38) { 
+            currentFocus--;
+            addActive(x);
+          } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+              if (x) x[currentFocus].click();
+            }
+          }
+
+    });
+      function addActive(x) {
+        if (!x) {
+          return false
+        };
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+      }
+      function removeActive(x) {
+        for (let i = 0; i < x.length; i++) {
+          x[i].classList.remove("autocomplete-active");
+        }
+      }
+      function closeAllLists(elmnt) {
+        const x = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < x.length; i++) {
+          if (elmnt != x[i] && elmnt != inp) {
+          x[i].parentNode.removeChild(x[i]);
+        }
+      }
+    }
+
+
+    document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+      });
+    }
+
+
+//GETTING csrf_token
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+      async function postData(url, data) {
+          const response = await fetch(url, {
+            method: 'POST',
+            cache: 'no-cache', 
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+              "X-CSRFTOKEN":  csrftoken
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer', 
+            body: JSON.stringify(data) 
+          });
+          return await response.json(); 
+        }
+
     </script>
 {% endblock %}

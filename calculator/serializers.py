@@ -22,8 +22,7 @@ class TermSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Term
-        fields = ('id',
-                  'cityto',
+        fields = ('cityto',
                   'cityfrom',
                   'term_standart_to',
                   'term_standart_from',
@@ -31,12 +30,12 @@ class TermSerializer(serializers.ModelSerializer):
                   'term_express_from')
 
 class CitySerializer(serializers.ModelSerializer):
-    count = serializers.SerializerMethodField()
+    # count = serializers.SerializerMethodField()
 
     class Meta:
         model=City
-        fields=('name','count',)
+        fields=('name',)
 
-    def get_count(self, obj):
-        return obj.get_count()
+    # def get_count(self, obj):
+    #     return obj.get_count()
     

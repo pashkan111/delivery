@@ -1,81 +1,170 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
+
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from validate_email import validate_email
+from .models import Profile
+from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
+# from helpers.decorators import auth_user_should_not_access
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.utils.encoding import force_bytes, force_text
+from .tokens import generate_token
+from django.core.mail import EmailMessage
+import threading
+from django.views.generic.base import View
 
-from .forms import SignUpForm
-from .tokens import account_activation_token
-from .models import Users
+class EmailThread(threading.Thread):
 
-User = get_user_model()
+    def __init__(self, email):
+        self.email = email
+        threading.Thread.__init__(self)
 
-def signup(request):
+    def run(self):
+        self.email.send()
+
+
+def send_activation_email(user, request):
+    current_site = get_current_site(request)
+    email_subject = 'Пожалуйста, активируйте ваш аккаунт'
+    email_body = render_to_string('accounts/activate.html', {
+        'user': user,
+        'domain': current_site,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': generate_token.make_token(user)
+    })
+
+    email = EmailMessage(subject=email_subject, body=email_body,
+                         from_email='pavel.k@dot-tech.ru',
+                         to=[user.email]
+                    )
+
+    EmailThread(email).start()
+
+
+# @auth_user_should_not_access
+def register(request):
+    if request.method == "POST":
+        context = {'has_error': False, 'data': request.POST}
+        email = request.POST.get('email')
+        # login = request.POST.get('login')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+
+        if len(password) < 3:
+            messages.add_message(request, messages.ERROR,
+                                 'Пароль должен содержать не менее трех символов')
+            print(1)
+            context['has_error'] = True
+
+        if password != password2:
+            messages.add_message(request, messages.ERROR,
+                                 'Пароли не совпадают')
+            print(2)
+            context['has_error'] = True
+
+        if not validate_email(email):
+            messages.add_message(request, messages.ERROR,
+                                 'Введите корректный email')
+            print(3)
+            context['has_error'] = True
+
+        if not email:
+            messages.add_message(request, messages.ERROR,
+                                 'Введите email')
+            print(4)
+            context['has_error'] = True
+            
+        if Profile.objects.filter(email=email).exists():
+            messages.add_message(request, messages.ERROR,
+                                 'Этот email уже занят.')
+            print(5)
+            context['has_error'] = True
+            return render(request, 'accounts/reglog.html', context, status=409)
+
+        # if not login:
+        #     messages.add_message(request, messages.ERROR,
+        #                          'Введите логин')
+        #     context['has_error'] = True
+        
+        # if Profile.objects.filter(login=login).exists():
+        #     messages.add_message(request, messages.ERROR,
+        #                          'Этот логин уже занят.')
+        #     context['has_error'] = True
+        #     return render(request, 'accounts/reglog.html', context, status=409)
+        
+        if context['has_error']:
+            print(6)
+            return render(request, 'accounts/reglog.html', context)
+        
+        user = Profile.objects.create_user(email=email, password=password)
+
+        user.set_password(password)
+        user.save()
+        if not context['has_error']:
+            send_activation_email(user, request)
+            messages.add_message(request, messages.SUCCESS,
+                                 'Вам на почту отправлено письмо со ссылкой для подтверждения')
+            return redirect('login')
+    return render(request, 'accounts/reglog.html')
+
+
+# @auth_user_should_not_access
+def login_user(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            if Users.objects.filter(email__iexact=email).count() == 1:
-                user = form.save(commit=False)
-                user.is_active = False
-                user.save()
-                current_site = get_current_site(request)
-                mail_subject = 'Активируйте вашу учетную запись.'
-                message = render_to_string('accounts/acc_active_email.html', {
-                            'user': user,
-                            'domain': current_site.domain,
-                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                            'token': account_activation_token.make_token(user),
-                        })
-                to_email = form.cleaned_data.get('email')
-                send_mail(mail_subject, message, 'n.chistyak0v322@gmail.com', [to_email])
-                print(send_mail)
-                return HttpResponse('Пожалуйста, подтвердите свой адрес электронной почты, чтобы завершить регистрацию')
-    else:
-        form = SignUpForm()
-    return render(request, 'accounts/signInUp.html', {'form': form})
+        context = {'data': request.POST}
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        print(request.POST)
+        
+        user = authenticate(request, email=email, password=password)
+        print(user)
+        # if user and user.is_active == False:
+        #     messages.add_message(request, messages.ERROR,
+        #                          'Email не верифицирован. Пожалуйста, проверьте свой почтовый ящик.')
+        #     print('no verified')
+            # return render(request, 'accounts/reglog.html', context, status=401)
+        if not user:
+            messages.add_message(request, messages.ERROR,
+                                 'Неверные данные')
+            print('no')
+            return render(request, 'accounts/reglog.html', context, status=401)
+        login(request, user)
+        messages.add_message(request, messages.SUCCESS,
+                             f'Добро пожаловать, {user.__str__()}')
+        print(f'Добро пожаловать, {user.__str__()}')
+        return render(request, 'accounts/reglog.html')
+    return render(request, 'accounts/reglog.html')
 
-def activate(request, uidb64, token):
+
+def logout_user(request):
+    logout(request)
+    messages.add_message(request, messages.SUCCESS,
+                         'Вы вышли из аккаунта'
+                    )
+    return redirect(reverse('login'))
+
+
+def activate_user(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = Profile.objects.get(pk=uid)
+    except Exception as e:
         user = None
-    if user is not None and account_activation_token.check_token(user, token):
+    if user and generate_token.check_token(user, token):
         user.is_active = True
         user.save()
-        return HttpResponse('Спасибо за подтверждение. Теперь вы можете войти в свою учетную запись.')
-    else:
-        return HttpResponse('Ссылка для активации недействительна!')
+        messages.add_message(request, messages.SUCCESS,
+                             'Email верифицирован, вы можете войти на сайт.')
+        return redirect(reverse('login'))
+    return render(request, 'accounts/reglog.html', {"user": user})
 
 
-def signin(request):
-    if request.user.is_authenticated:
-        return render(request, 'shared/site.html')
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('/')
-        else:
-            form = AuthenticationForm(request.POST)
-            return render(request, 'accounts/signInUp.html', {'form': form})
-    else:
-        form = AuthenticationForm()
-        return render(request, 'accounts/signInUp.html', {'form': form})
-
-
-@login_required
-def signout(request):
-    logout(request)
-    return redirect('index')
+class PersonalCabinet(View):
+    def get(self, request):
+        context = {}
+        return render(request, 'personal_cabinet.html', context)
+    
+    def post(self, request):
+        pass

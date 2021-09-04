@@ -4,113 +4,140 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import JSONParser 
 from rest_framework.decorators import api_view
-
+from rest_framework.views import APIView
 from calculator.models import Calculate, Term, City
 from calculator.serializers import CalculateSerializer, TermSerializer, CitySerializer
-
 import json
-# Create your views here.
+from .services import get_price, get_time_to_deliver
+from loguru import logger
 
-def calc(request):
 
-    context = { 
-        'is_worker': request.user.groups.filter(name='worker').exists(),
-    }
+logger.add('logs/debug_calculator.log', format="{time} {level}, {message}", level="DEBUG", rotation='100 KB')
+
+def calc(request): 
+    return render(request, 'calculator.html')
+
+
+class PostCalculate(APIView):
+
+    def post(self, request):
+        calc_data = dict(request.data)
+        try:
+            cityto_name = calc_data.get('cityto')
+            cityfrom_name = calc_data.get('cityfrom')
+            weight = float(calc_data.get('weight'))
+            volume = float(calc_data.get('volume'))
+            delivery_from = calc_data.get('delivery_from', 0)
+            delivery_to = calc_data.get('delivery_to', 0)
+        except KeyError as ke:
+            logger.error(f'{ke}')
+            message = {'status': 'no data'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+        cityto_id = City.objects.filter(name=cityto_name).first().id
+        cityfrom_id = City.objects.filter(name=cityfrom_name).first().id
+        if cityto_id and cityfrom_id:
+            try:
+                price_standart, price_express, convert_price, inter_terminal, price_to_address, price_from_address = get_price(
+                    cityto_id,
+                    cityfrom_id,
+                    weight,
+                    volume,
+                    delivery_from,
+                    delivery_to
+                )
+                if not (price_standart,  price_express, convert_price):
+                    return Response('data with such parametrs does not exist')
+            except Exception as ex:
+                logger.error(ex)
+                return Response(f'error: {ex}', status=status.HTTP_400_BAD_REQUEST)
+            times = get_time_to_deliver(cityto_id, cityfrom_id)
+            data = {
+                'price_standart': price_standart,
+                'price_express': price_express,
+                'convert_price': convert_price,
+                'inter_terminal': inter_terminal,
+                'price_to_address': price_to_address, 
+                'price_from_address': price_from_address,
+                'times': times
+            }
+            logger.info(f'{data} has been sent to frontend')
+            return Response(json.dumps(data))
+        else:
+            logger.error('Such city does not exist')
+            return Response('Such city does not exist')
+
+
+class PutCalculatorData(APIView):
+
+    def post(self, request):
+        data = request.data
+        try:
+            cityto_name = data['cityto']
+            cityfrom_name = data['cityfrom']
+            weightfrom = data['weightfrom']
+            weightto = data['weightto']
+            inter_terminal = data['inter_terminal']
+            delivery_from = data['delivery_from']
+            delivery_to = data['delivery_to']
+            convert_price = data['convert_price']
+        except KeyError as ke:
+            logger.error(f'{ke}')
+            return Response(f'{ke}')   
+        if cityfrom_name and cityfrom_name:
+            new_cityto, created = City.objects.get_or_create(name=cityto_name)
+            new_cityfrom, created = City.objects.get_or_create(name=cityfrom_name)
+            cityto_id = new_cityto.id
+            cityfrom_id = new_cityfrom.id      
+            new_calculator, created = Calculate.objects.get_or_create(                cityto=new_cityto,
+                cityfrom=new_cityfrom,
+                weightfrom=weightfrom,
+                weightto=weightto,
+                inter_terminal=inter_terminal,
+                delivery_from=delivery_from,
+                delivery_to=delivery_to,
+                convert_price=convert_price    
+            )
+            if new_calculator:
+                logger.info(f'{new_calculator.__str__()} has been created')
+        return Response('ok')
+
+
+class PutTermData(APIView):
     
-    return render(request, 'calculator.html', context)
-
-
-def calc_post(request):
-    struct = request.POST.get('struct')
-    weight = float(struct[3])
-    volume = float(struct[4])
-    # todo
-    volume_weight = volume * 240
-    max_weight = max(weight, volume_weight)
-    
-    response = Calculate.objects.filter(cityto__exact=struct[0]).filter(cityfrom__exact=struct[1]).filter(weightto__gte=str(max_weight))
-    #response_term = Term.objects.filter(cityto__exact=struct[0]).filter(cityfrom__exact=struct[1]).filter
-    res_calc = {
-        'cityto': response[0][0],
-        'cityfrom': response[0][1],    
-        'weightto': response[0][2],  
-        'weightfrom': response[0][3],
-        'inter_terminal': response[0][4],
-        'pickup': response[0][5],
-        'cargo_delivery': response[0][6],
-    }
-
-    return json.dumps(res_calc)
-
-
-@api_view(['GET', 'POST'])
-def create_calculate(request):  
-    if request.method == 'GET':
-        calc_api = Calculate.objects.all()
-        calc_api_serializer = CalculateSerializer(calc_api, many=True)
-        return JsonResponse(calc_api_serializer.data, safe=False)
-
-    elif request.method == 'POST':
-        calc_api_data = JSONParser().parse(request)
-        calc_api_serializer = CalculateSerializer(data=calc_api_data, many=True)
-        if calc_api_serializer.is_valid():
-            calc_api_serializer.save()
-            return JsonResponse(calc_api_serializer.data, safe=False, status=status.HTTP_201_CREATED)
-        return JsonResponse(calc_api_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['PUT'])
-def update_calculate(request, pk):
-    try:
-        calc_api = Calculate.objects.get(pk=pk)
-    except Calculate.DoesNotExist:
-        return JsonResponse({'message': 'Накладной не существует'}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'PUT':
-        calc_api_data = JSONParser().parse(request)
-        calc_api_serializer = CalculateSerializer(calc_api, data=calc_api_data)
-        if calc_api_serializer.is_valid():
-            calc_api_serializer.save()
-            return JsonResponse(calc_api_serializer.data, safe=False, status=status.HTTP_201_CREATED)
-        return JsonResponse(calc_api_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'POST'])
-def create_term(request):  
-    if request.method == 'GET':
-        term_api = Term.objects.all()
-        term_api_serializer = TermSerializer(term_api, many=True)
-        return JsonResponse(term_api_serializer.data, safe=False)
-
-    elif request.method == 'POST':
-        term_api_data = JSONParser().parse(request)
-        term_api_serializer = TermSerializer(data=term_api_data, many=True)
-        if term_api_serializer.is_valid():
-            term_api_serializer.save()
-            return JsonResponse(term_api_serializer.data, safe=False, status=status.HTTP_201_CREATED)
-        return JsonResponse(term_api_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['PUT'])
-def update_term(request, pk):
-    try:
-        term_api = Term.objects.get(pk=pk)
-    except Term.DoesNotExist:
-        return JsonResponse({'message': 'Накладной не существует'}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'PUT':
-        term_api_data = JSONParser().parse(request)
-        term_api_serializer = TermSerializer(term_api, data=term_api_data)
-        if term_api_serializer.is_valid():
-            term_api_serializer.save()
-            return JsonResponse(term_api_serializer.data, safe=False, status=status.HTTP_201_CREATED)
-        return JsonResponse(term_api_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+    def post(self, request):
+        data = request.data
+        for lst in data:
+            try:
+                cityto_name = lst['cityto']
+                cityfrom_name = lst['cityfrom']
+                term_standart_from = lst['term_standart_from']
+                term_standart_to = lst['term_standart_to']
+                term_express_from = lst['term_express_from']
+                term_express_to = lst['term_express_to']
+            except KeyError as ke:
+                logger.error(f'{ke}')     
+                return Response(f'{ke}')
+            if cityfrom_name and cityfrom_name:
+                new_cityto, created = City.objects.get_or_create(name=cityto_name)
+                new_cityfrom, created = City.objects.get_or_create(name=cityfrom_name)
+                cityto_id = new_cityto.id
+                cityfrom_id = new_cityfrom.id
+                new_term, created = Term.objects.get_or_create(
+                    cityto=new_cityto,
+                    cityfrom=new_cityfrom,
+                    term_standart_from=term_standart_from,
+                    term_standart_to=term_standart_to,
+                    term_express_from=term_express_from,
+                    term_express_to=term_express_to,
+                )
+                if new_term:
+                    logger.info(f'{new_term.__str__()} has been created')
+        return Response('ok')
+        # return Response('ok')
+        
+            
 @api_view(['GET'])
-def get_availible_countries(request):
-    data = City.objects.all()
+def get_availible_cities(request):
+    data = City.objects.all().only('name')
     cities = CitySerializer(data, many=True)
-    print(cities.data)
-    # return JsonResponse({'c':'3434'})
     return Response(cities.data)

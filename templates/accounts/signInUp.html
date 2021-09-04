@@ -1,4 +1,4 @@
-{% extends 'shared/site.html' %} {% load static %}
+{% comment %} {% extends 'shared/site.html' %} {% load static %}
 <title>{% block title %}{% endblock %}</title>
 <script
   src="https://kit.fontawesome.com/64d58efce2.js"
@@ -47,7 +47,7 @@
       </form>
       <form
         action="{% url 'signup' %}"
-        method="post"
+        method="POST"
         class="sign-up-form"
         enctype="multipart/form-data"
       >
@@ -91,7 +91,7 @@
     <div class="panel left-panel">
       <div class="content">
         <h3>Впервые здесь?</h3>
-        <p>Зарегистрируйтесь, чтбы получить доступ ко всем нашим сервисам!</p>
+        <p>Зарегистрируйтесь, чтобы получить доступ ко всем нашим сервисам!</p>
         <button class="btn transparent" id="sign-up-btn">Регистрация</button>
       </div>
     </div>
@@ -107,4 +107,4 @@
 
 {% endblock %}
 
-<script src="{% static '/static/js/signInUp.js' %}"></script>
+<script src="{% static '/static/js/signInUp.js' %}"></script> {% endcomment %}

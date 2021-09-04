@@ -1,0 +1,79 @@
+.gabarity {
+    margin-bottom: 15px;
+}
+
+.gabarity p {
+    padding: 2px;
+    margin: 0;
+}
+
+.from_to {
+    margin-bottom: 15px;
+}
+
+
+.from_to p {
+    padding: 2px;
+    margin: 0;
+}
+
+
+.date {
+    margin-bottom: 15px;
+}
+
+
+.date p {
+    padding: 2px;
+    margin: 0;
+}
+
+
+.dop_services {
+    margin-bottom: 15px;
+}
+
+
+.dop_services p {
+    padding: 1px;
+    margin: 0;
+}
+
+
+.packing {
+    margin-bottom: 15px;
+}
+
+
+.packing p {
+    padding: 1px;
+    margin: 0;
+}
+
+
+.sender {
+    margin-bottom: 15px;
+    margin-right: 30px;
+}
+
+
+.sender p {
+    padding: 1px;
+    margin: 0;
+}
+
+.accepter {
+    margin-bottom: 15px;
+    margin-right: 30px;
+}
+
+
+.accepter p {
+    padding: 1px;
+    margin: 0;
+}
+
+.main_p {
+    border-bottom: 1px solid;
+    text-align: center
+}
