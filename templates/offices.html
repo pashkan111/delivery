@@ -20,3 +20,29 @@
     </div>
 </div>
 {% endblock base_content %}
+
+
+{% for i in cities %}
+<h3 id="city" style="cursor: pointer;" >{{i.name}}</h3>
+<div style="display: none;" id="offices">
+    {% for j in i.office_of_city.all %}
+        <p>{{j.name}}</p>
+    {% endfor%}
+</div>
+{% endfor%}
+
+<script>
+    const cities = document.querySelectorAll('#city')
+    const offices = document.querySelectorAll('#offices')
+    cities.forEach((el, i) => {
+        el.onclick = () => {
+            if (offices[i].style.display == 'none'){
+                offices[i].style.display = 'block'
+                console.log(offices[i].style.display)
+            } else if (offices[i].style.display = 'block') {
+                console.log(offices[i].style.display)
+                offices[i].setAttribute("style", "display: none");
+            }
+        } 
+    })
+</script>

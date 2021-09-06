@@ -633,6 +633,31 @@ let cities = []
 
 const errorStyles = "border-color:#f71616; box-shadow: 0 0 7px #d45252;"
 const inputStyles = "border:1px solid blue; box-shadow:0 0 5px blue;"
+
+window.onload = function(e)
+{
+
+    fetch('http://127.0.0.1:8000/api/get-cities')
+      .then((response) => {
+        return response.json();
+      }).then(function(data){
+        data.map(i => {
+          cities.push(i.name)
+        })
+      })
+
+      autocomplete(cityto, cities);
+      autocomplete(cityfrom, cities); 
+
+      listOfInputs = document.querySelectorAll('input')
+      listOfSelects = document.querySelectorAll('select')
+  
+
+    for(let i=0; i<3; i++){
+      interval2[i].setAttribute("disabled", "disabled")
+    }
+}
+
 // Упаковка груза
 
 
@@ -871,14 +896,14 @@ lstOfDopServices.forEach((el, i) => {
 
     else if (el == insurance)
     {
-      let checked = false
+      let check = false
       checkedDops(el, i)
       if (el.checked){
         //let currentPrice = +price.innerText
-        if (!checked){
+        if (!check){
           price.innerText = +price.innerText + 50
         }        
-        checked = true
+        check = true
       }else{
           declaredValue.value = 0
           declaredValue.style.cssText = inputStyles
@@ -965,8 +990,7 @@ lstOfDopServices.forEach((el, i) => {
   })
 })
 
-loadingAndUnloadingRecipient
-floorRecipient
+
 
 function checkWeight(value){
   if(value<15){
@@ -1030,30 +1054,9 @@ function checkInput(newValue, currentValue){
 }
 
 
-    window.onload = function(e)
-{
+function checkInsurance(value){
 
-    fetch('http://127.0.0.1:8000/api/get-cities')
-      .then((response) => {
-        return response.json();
-      }).then(function(data){
-        data.map(i => {
-          cities.push(i.name)
-        })
-      })
-
-      autocomplete(cityto, cities);
-      autocomplete(cityfrom, cities); 
-
-      listOfInputs = document.querySelectorAll('input')
-      listOfSelects = document.querySelectorAll('select')
-  
-
-    for(let i=0; i<3; i++){
-      interval2[i].setAttribute("disabled", "disabled")
-    }
 }
-
 
 const len = document.querySelector('#id_length_one')
 const wid = document.querySelector('#id_width_one')
